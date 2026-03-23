@@ -1,0 +1,38 @@
+{
+  "name": "prototype-explorer",
+  "version": "0.1.0",
+  "description": "Organize, version, and explore prototypes inside your coding project",
+  "type": "module",
+  "bin": {
+    "proto-explorer": "./dist/index.js"
+  },
+  "scripts": {
+    "dev:cli": "tsup --watch",
+    "dev:explorer": "pnpm --filter explorer dev",
+    "build:cli": "tsup",
+    "build:explorer": "pnpm --filter explorer build",
+    "build": "pnpm build:explorer && pnpm build:cli",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "commander": "^13.1.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "fs-extra": "^11.3.0",
+    "glob": "^11.0.2",
+    "nanoid": "^5.1.5",
+    "open": "^10.2.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.18",
+    "@types/express": "^5.0.0",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.15.0",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
