@@ -62,6 +62,7 @@ interface ExplorerStore {
   activeVersionId: string | null;
   subVersionIndices: Record<string, number>;
   pillVisible: boolean;
+  drawerOpen: boolean;
   pendingGroupId: string | null;
 
   fetchPrototypes: () => Promise<void>;
@@ -78,6 +79,9 @@ interface ExplorerStore {
   togglePill: () => void;
   showPill: () => void;
   hidePill: () => void;
+  openDrawer: () => void;
+  closeDrawer: () => void;
+  toggleDrawer: () => void;
 
   currentVersion: () => PrototypeVersion | null;
   groupVersions: () => PrototypeVersion[];
@@ -104,6 +108,7 @@ export const useExplorerStore = create<ExplorerStore>((set, get) => ({
   activeVersionId: null,
   subVersionIndices: {},
   pillVisible: true,
+  drawerOpen: false,
   pendingGroupId: null,
 
   fetchPrototypes: async () => {
@@ -244,6 +249,9 @@ export const useExplorerStore = create<ExplorerStore>((set, get) => ({
   togglePill: () => set((s) => ({ pillVisible: !s.pillVisible })),
   showPill: () => set({ pillVisible: true }),
   hidePill: () => set({ pillVisible: false }),
+  openDrawer: () => set({ drawerOpen: true, drawerView: 'scenarios' }),
+  closeDrawer: () => set({ drawerOpen: false }),
+  toggleDrawer: () => set((s) => s.drawerOpen ? { drawerOpen: false } : { drawerOpen: true, drawerView: 'scenarios' }),
 
   currentVersion: () => {
     const { allVersions, activeVersionId, currentGroup } = get();

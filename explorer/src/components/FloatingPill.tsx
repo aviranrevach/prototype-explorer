@@ -14,19 +14,25 @@ interface FloatingPillProps {
 export function FloatingPill({ prototypeName }: FloatingPillProps) {
   const {
     pillVisible,
+    drawerOpen,
     currentVersion,
     currentGroup,
     subVersionsOf,
     goSubNext,
     goSubPrev,
-    setDrawerView,
+    toggleDrawer,
+    closeDrawer,
   } = useExplorerStore();
 
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const [closing, setClosing] = useState(false);
   const pillRef = useRef<HTMLDivElement>(null);
+  const mountedAt = useRef(Date.now());
 
-  const closeDrawer = useCallback(() => {
+  useEffect(() => {
+    mountedAt.current = Date.now();
+  }, []);
+
+  const handleClose = useCallback(() => {
     if (!drawerOpen || closing) return;
     setClosing(true);
   }, [drawerOpen, closing]);
@@ -34,28 +40,21 @@ export function FloatingPill({ prototypeName }: FloatingPillProps) {
   function handleAnimationEnd() {
     if (closing) {
       setClosing(false);
-      setDrawerOpen(false);
-    }
-  }
-
-  function toggleDrawer() {
-    if (drawerOpen) {
       closeDrawer();
-    } else {
-      setDrawerView('scenarios');
-      setDrawerOpen(true);
     }
   }
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
+      // Skip click-outside briefly after mount to avoid closing from navigation clicks
+      if (Date.now() - mountedAt.current < 200) return;
       if (pillRef.current && !pillRef.current.contains(e.target as Node)) {
-        closeDrawer();
+        handleClose();
       }
     }
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
-  }, [closeDrawer]);
+  }, [handleClose]);
 
   if (!pillVisible) return null;
 
@@ -72,7 +71,7 @@ export function FloatingPill({ prototypeName }: FloatingPillProps) {
           className={`absolute bottom-full left-0 mb-3 ${closing ? 'animate-drawer-exit' : ''}`}
           onAnimationEnd={handleAnimationEnd}
         >
-          <VersionDrawer onClose={closeDrawer} />
+          <VersionDrawer onClose={handleClose} />
         </div>
       )}
 

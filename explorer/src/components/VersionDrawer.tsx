@@ -55,7 +55,6 @@ export function VersionDrawer({ onClose }: VersionDrawerProps) {
     } else {
       useExplorerStore.setState({ pendingGroupId: item.group.id });
       navigate(`/viewer/${item.prototypeId}`);
-      onClose();
     }
   }
 

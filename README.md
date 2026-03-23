@@ -4,8 +4,8 @@
 
 You're building prototypes to explore product directions. Maybe it's an onboarding flow, a dashboard redesign, a new navigation concept. You try things, iterate, go in different directions- and before you know it, your coded prototypes are a hot, unorganized, inaccessible mess. Unlike your Figma files where everything is collaborative and browsable, your code prototypes just pile up in folders with no structure, no history, and no way to flip between the cool concepts you created.
 
-No more! Prototype Explorer saves snapshots of your as prototypes, organizes them into groups you define, and gives you a minimal floating UI to flip between everything- right inside the browser, right inside your project.  
-Install it for yourslef, and your team mates. your product team needs it.
+No more. Prototype Explorer saves snapshots of your prototypes, organizes them into groups you define, and gives you a minimal floating UI to flip between everything — right inside the browser, right inside your project.
+Install it for yourself, and your teammates. Your product team needs this.
 
 No cloud. No accounts. Just `npm install` and go.
 
@@ -78,10 +78,10 @@ Create your first version group - a chapter of exploration:
 proto-explorer group "Onboarding v1"
 ```
 
-You've been working on a welcome screen. Save a snapshot of where things are right now:
+You've been working on the ideal flow. Save a snapshot of where things are right now:
 
 ```bash
-proto-explorer snap "01 Welcome Screen"
+proto-explorer snap "Ideal Flow"
 ```
 
 Open the explorer to browse everything you've built:
@@ -120,10 +120,10 @@ Click the pill to open the drawer:
 
 ### Getting started
 
-`**proto-explorer init`**
+**`proto-explorer init`**
 Sets up Prototype Explorer in your project. Run this once. It creates the hidden `.proto-explorer/` folder.
 
-`**proto-explorer new <name>**`
+**`proto-explorer new <name>`**
 Creates a new prototype - the thing you're building.
 *Use when you're starting a new project or page to explore.*
 
@@ -131,7 +131,7 @@ Creates a new prototype - the thing you're building.
 proto-explorer new "Checkout Experience"
 ```
 
-`**proto-explorer group <name>**`
+**`proto-explorer group <name>`**
 Creates a version group inside your prototype - a new round of exploration.
 *Use when you're starting a fresh direction. "Checkout v1" was your first attempt; "Checkout v2" is the redesign.*
 
@@ -139,24 +139,24 @@ Creates a version group inside your prototype - a new round of exploration.
 proto-explorer group "Checkout v2"
 ```
 
-`**proto-explorer serve**`
+**`proto-explorer serve`**
 Starts the explorer at `localhost:4200`.
 *Use whenever you want to browse, flip between versions, or present your work.*
 
 ### Snapshots and versions
 
-`**proto-explorer snap <name>*`*
+**`proto-explorer snap <name>`**
 Takes a snapshot of your current files and saves it as a named version.
 *Use every time you reach a point worth saving: before you try something new, after you finish a direction, or when something just feels right.*
 
 ```bash
-proto-explorer snap "01 Welcome Screen"
+proto-explorer snap "Ideal Flow"
 ```
 
 Snap the same name again to create a sub-version you can flip between:
 
 ```bash
-proto-explorer snap "01 Welcome Screen"   # now you have 2 sub-versions
+proto-explorer snap "Ideal Flow"   # now you have 2 sub-versions
 ```
 
 **Snap options:** you can control where the snap lands and how it's labeled:
@@ -175,7 +175,7 @@ proto-explorer snap "Bulk Selection" --tag exploration needs-review
 proto-explorer snap "Error State" --desc "What happens when the API call fails"
 ```
 
-`**proto-explorer restore <id>**`
+**`proto-explorer restore <id>`**
 Pulls a previous snap back into your working files.
 *Use when you want to go back to an earlier version, maybe to build on it or compare it side by side with what you have now.*
 
@@ -183,7 +183,7 @@ Pulls a previous snap back into your working files.
 proto-explorer restore abc123
 ```
 
-`**proto-explorer list**`
+**`proto-explorer list`**
 Shows all your prototypes, groups, and versions in the terminal.
 *Use when you want a quick overview without opening the explorer. Add `-v` to see every individual version.*
 
@@ -191,13 +191,13 @@ Shows all your prototypes, groups, and versions in the terminal.
 proto-explorer list -v
 ```
 
-`**proto-explorer rm <id>**`
+**`proto-explorer rm <id>`**
 Deletes a version permanently.
 *Use when a snap is just noise and you want to clean up.*
 
 ### Organizing
 
-`**proto-explorer tag <id> <tags...>*`*
+**`proto-explorer tag <id> <tags...>`**
 Adds or removes tags on a version.
 *Use to mark a version's status or intent: "final", "rejected", "show-to-PM", "needs-work".*
 
@@ -205,11 +205,11 @@ Adds or removes tags on a version.
 proto-explorer tag abc123 final stakeholder-approved
 ```
 
-`**proto-explorer star <id>**`
+**`proto-explorer star <id>`**
 Toggles a star on a version.
 *Use to mark your favorites - the ones worth showing or coming back to.*
 
-`**proto-explorer note <id> <text>*`*
+**`proto-explorer note <id> <text>`**
 Attaches a note to a version.
 *Use to capture decisions, feedback, or context while it's still fresh. "PM liked this direction but wants more contrast."*
 
@@ -219,7 +219,7 @@ proto-explorer note abc123 "Stakeholder approved - ship this direction"
 
 ### Collaboration and AI
 
-`**proto-explorer context**`
+**`proto-explorer context`**
 View, edit, or auto-generate your project context file.
 *Context is your project's memory: goals, audience, design decisions, constraints. Write it for your teammates and your future self.*
 
@@ -229,7 +229,7 @@ proto-explorer context edit       # open in your editor
 proto-explorer context            # view in terminal
 ```
 
-`**proto-explorer brief <group-id> <text>**`
+**`proto-explorer brief <group-id> <text>`**
 Sets a short brief on a version group - what this round of exploration is about.
 *Use before asking AI to compare groups, or when handing off to a teammate.*
 
@@ -237,7 +237,7 @@ Sets a short brief on a version group - what this round of exploration is about.
 proto-explorer brief abc123 "Exploring bold typography and dark color palettes"
 ```
 
-`**proto-explorer export**`
+**`proto-explorer export`**
 Generates a complete summary of your project: context, hierarchy, notes, file listings. In a format AI tools and teammates can read.
 *Use whenever you want to hand off your work, get AI feedback, or just see everything in one place.*
 
@@ -263,6 +263,7 @@ These prompts work as-is. AI reads your current files and does the work.
 | **Simplify a busy layout** | *"This dashboard has too much going on. Keep the **data table** and **filters**, remove the secondary charts, tighten the spacing."* | `proto-explorer snap "Dashboard Overview"` - snapping the same name stacks sub-versions you can flip between |
 | **Generate multiple options** | *"Give me three variations of this **settings page**: one **minimal**, one with a **bold sidebar**, one with **grouped cards**."* | Snap each one: `snap "Option A - Minimal"`, `snap "Option B - Bold Sidebar"`, etc. |
 | **Iterate on a direction** | *"Make the **hero section** bolder: bigger type, more contrast, and swap the illustration for a **full-bleed photo**."* | `proto-explorer snap "Hero - Bold"` |
+| **Explore concepts** | *"Explore 5 different directions for this **settings page**. Try different layouts, visual hierarchies, and grouping styles. After each one, run `proto-explorer snap "Settings Concepts"` so I can flip through them."* | AI generates each direction one at a time. Snapping the same name after each one creates sub-versions: Settings Concepts `< 1/5 >` you flip through with arrow keys |
 | **Fix or polish** | *"The spacing feels off on **mobile**. Tighten the **card grid** and make the **nav** collapse into a hamburger."* | `proto-explorer snap "Mobile Polish"` |
 
 ### One command first, then talk
