@@ -56,41 +56,16 @@ Labels you attach to any snap. Use them for status ("exploration", "final", "rej
 ## Quick start
 
 ```bash
-# Install the tool
 npm install prototype-explorer
 ```
 
-Set up Prototype Explorer in your project. This creates a hidden `.proto-explorer/` folder that stores all your snapshots. You never need to touch it directly.
-
-```bash
-proto-explorer init
-```
-
-Create a prototype - the thing you're exploring:
-
-```bash
-proto-explorer new "Onboarding Flow"
-```
-
-Create your first version group - a chapter of exploration:
-
-```bash
-proto-explorer group "Onboarding v1"
-```
-
-You've been working on the ideal flow. Save a snapshot of where things are right now:
-
-```bash
-proto-explorer snap "Ideal Flow"
-```
-
-Open the explorer to browse everything you've built:
-
-```bash
-proto-explorer serve
-```
-
-The explorer opens at `http://localhost:4200` with a floating pill at the bottom-left of the screen.
+| Step | Command | What it does |
+| --- | --- | --- |
+| **1. Init** | `proto-explorer init` | Sets up Prototype Explorer in your project. Creates a hidden `.proto-explorer/` folder that stores all your snapshots. |
+| **2. New prototype** | `proto-explorer new "Onboarding Flow"` | Creates a prototype — the thing you're exploring. |
+| **3. Version group** | `proto-explorer group "Onboarding v1"` | Creates your first version group — a chapter of exploration. |
+| **4. Snap** | `proto-explorer snap "Ideal Flow"` | Saves a snapshot of your current files as a named version. |
+| **5. Serve** | `proto-explorer serve` | Opens the explorer at `http://localhost:4200` with a floating pill at the bottom-left of the screen. |
 
 ---
 
