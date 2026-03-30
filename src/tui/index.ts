@@ -6,15 +6,17 @@ export async function runInteractiveTUI(): Promise<void> {
   const config = await storage.getConfig();
 
   if (!config) {
-    // First-run welcome flow
-    const { prototypeId, groupId } = await runWelcome();
+    // First-run welcome flow, then drop into main TUI
+    const result = await runWelcome();
+    await runMainTUI(result);
     return;
   }
 
   // Existing project - launch interactive browser
   const protos = await storage.listPrototypes();
   if (protos.length === 0) {
-    const { prototypeId, groupId } = await runWelcome();
+    const result = await runWelcome();
+    await runMainTUI(result);
     return;
   }
 

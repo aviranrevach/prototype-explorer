@@ -7,6 +7,8 @@ import { createSnapshot } from '../core/snapshot.js';
 export async function runWelcome(): Promise<{ prototypeId: string; groupId: string }> {
   p.intro(chalk.bgHex('#6d5cff').white(' snap '));
 
+  p.log.info('Snap saves snapshots of your coded prototypes so you can flip between them.');
+
   const projectName = await p.text({
     message: 'Name your project',
     placeholder: path.basename(process.cwd()),
@@ -27,7 +29,7 @@ export async function runWelcome(): Promise<{ prototypeId: string; groupId: stri
   s.stop('Project created');
 
   const groupName = await p.text({
-    message: 'First chapter name',
+    message: 'First chapter name (a chapter is a round of exploration, like "v1" or "Dark Theme")',
     placeholder: 'v1',
     defaultValue: 'v1',
   });
@@ -40,7 +42,7 @@ export async function runWelcome(): Promise<{ prototypeId: string; groupId: stri
   const group = await storage.createGroup(proto.id, { name: groupName });
 
   const shouldSnap = await p.confirm({
-    message: 'Take your first snap now?',
+    message: 'Snap your current files now?',
     initialValue: true,
   });
 
@@ -49,17 +51,24 @@ export async function runWelcome(): Promise<{ prototypeId: string; groupId: stri
     process.exit(0);
   }
 
+  let snapName: string | undefined;
+
   if (shouldSnap) {
-    const snapName = await p.text({
-      message: 'Snap name',
+    const name = await p.text({
+      message: 'Give this snap a name',
       placeholder: 'Initial',
       defaultValue: 'Initial',
+      validate: (val) => {
+        if (!val?.trim()) return 'Name cannot be empty';
+      },
     });
 
-    if (p.isCancel(snapName)) {
+    if (p.isCancel(name)) {
       p.cancel('Cancelled.');
       process.exit(0);
     }
+
+    snapName = name;
 
     const s2 = p.spinner();
     s2.start('Snapping');
@@ -75,7 +84,27 @@ export async function runWelcome(): Promise<{ prototypeId: string; groupId: stri
     s2.stop(`Snapshot "${snapName}" saved (${version.fileCount} files)`);
   }
 
-  p.outro(`You're all set! Run ${chalk.cyan('snap serve')} to explore.`);
+  // Show what was created
+  const d = chalk.dim;
+  const c = chalk.cyan;
+  if (snapName) {
+    p.log.message(`
+${chalk.white('Your project:')}
+
+  ${c('\u{1F4E6}')} ${projectName}
+  ${d('\u2514\u2500\u2500')} ${c('\u{1F4D6}')} ${groupName}
+      ${d('\u2514\u2500\u2500')} ${snapName} ${d('(1 take)')}
+`);
+  } else {
+    p.log.message(`
+${chalk.white('Your project:')}
+
+  ${c('\u{1F4E6}')} ${projectName}
+  ${d('\u2514\u2500\u2500')} ${c('\u{1F4D6}')} ${groupName} ${d('(empty)')}
+`);
+  }
+
+  p.outro('You\'re all set!');
 
   return { prototypeId: proto.id, groupId: group.id };
 }

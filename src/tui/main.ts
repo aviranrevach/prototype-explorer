@@ -30,32 +30,43 @@ export async function runMainTUI(state: TUIState): Promise<void> {
     currentGroupId = currentGroup.id;
 
     const versions = await storage.listVersions(state.prototypeId, currentGroupId);
-
-    // Build scenario list
     const scenarios = buildScenarios(versions);
 
-    // Build choices
     const choices: { value: string; label: string; hint?: string }[] = [];
 
-    for (const scenario of scenarios) {
-      const star = scenario.starred ? chalk.yellow(' \u2605') : '';
-      const subCount = scenario.count > 1 ? chalk.dim(` (${scenario.count} takes)`) : '';
+    if (scenarios.length === 0) {
       choices.push({
-        value: `version:${scenario.latestId}`,
-        label: `${scenario.name}${star}${subCount}`,
-        hint: scenario.tags.length > 0 ? scenario.tags.join(', ') : undefined,
+        value: 'action:snap',
+        label: chalk.green('\u2795 Take your first snap'),
+        hint: 'save your current files',
       });
+    } else {
+      for (const scenario of scenarios) {
+        const star = scenario.starred ? chalk.yellow(' \u2605') : '';
+        const subCount = scenario.count > 1 ? chalk.dim(` (${scenario.count} takes)`) : '';
+        choices.push({
+          value: `version:${scenario.latestId}`,
+          label: `${scenario.name}${star}${subCount}`,
+          hint: scenario.tags.length > 0 ? scenario.tags.join(', ') : undefined,
+        });
+      }
+
+      choices.push(
+        { value: 'action:snap', label: chalk.green('\u2795 New snap'), hint: 'save current files' },
+      );
     }
 
     choices.push(
-      { value: 'action:snap', label: chalk.green('\u2795 New snap'), hint: 'save current state' },
-      { value: 'action:group', label: chalk.cyan('\u{1F4C1} Switch chapter'), hint: currentGroup.name },
-      { value: 'action:serve', label: chalk.magenta('\u{1F310} Open explorer'), hint: 'localhost:4200' },
+      { value: 'action:group', label: chalk.cyan('\u{1F4C1} Switch chapter'), hint: `viewing: ${currentGroup.name}` },
+      { value: 'action:serve', label: chalk.magenta('\u{1F310} Open explorer'), hint: 'visual browser' },
+      { value: 'action:help', label: chalk.yellow('\u2753 What is this?'), hint: undefined },
       { value: 'action:quit', label: chalk.dim('\u{1F6AA} Quit') },
     );
 
     const header = `${chalk.bold(proto.name)} ${chalk.dim('\u203A')} ${chalk.cyan(currentGroup.name)}`;
-    const versionCount = versions.length === 1 ? '1 round' : `${versions.length} rounds`;
+    const versionCount = versions.length === 0
+      ? 'empty'
+      : versions.length === 1 ? '1 round' : `${versions.length} rounds`;
 
     const selection = await p.select({
       message: `${header} ${chalk.dim(`(${versionCount})`)}`,
@@ -79,6 +90,9 @@ export async function runMainTUI(state: TUIState): Promise<void> {
         const snapName = await p.text({
           message: 'Snap name',
           placeholder: 'Untitled',
+          validate: (val) => {
+            if (!val?.trim()) return 'Name cannot be empty';
+          },
         });
 
         if (p.isCancel(snapName)) continue;
@@ -104,8 +118,38 @@ export async function runMainTUI(state: TUIState): Promise<void> {
         continue;
       }
 
+      if (id === 'help') {
+        showHelp();
+        continue;
+      }
+
       if (id === 'serve') {
-        p.log.info(`Run ${chalk.cyan('snap serve')} in another terminal to open the explorer.`);
+        const s = p.spinner();
+        s.start('Starting explorer');
+        try {
+          const { createServer } = await import('../server/index.js');
+          const open = (await import('open')).default;
+          const app = await createServer();
+          const port = 4200;
+          await new Promise<void>((resolve, reject) => {
+            const server = app.listen(port, () => {
+              s.stop(`Explorer running at ${chalk.cyan(`http://localhost:${port}`)}`);
+              open(`http://localhost:${port}`);
+              resolve();
+            });
+            server.on('error', (err: NodeJS.ErrnoException) => {
+              if (err.code === 'EADDRINUSE') {
+                s.stop(`Port ${port} already in use, opening browser anyway`);
+                open(`http://localhost:${port}`);
+                resolve();
+              } else {
+                reject(err);
+              }
+            });
+          });
+        } catch {
+          s.stop(chalk.red('Failed to start explorer'));
+        }
         continue;
       }
     }
@@ -140,6 +184,9 @@ async function switchGroup(
     const name = await p.text({
       message: 'Chapter name',
       placeholder: 'v2',
+      validate: (val) => {
+        if (!val.trim()) return 'Name cannot be empty';
+      },
     });
 
     if (p.isCancel(name)) return null;
@@ -171,20 +218,20 @@ async function versionMenu(
 
   if (subs.length > 1) {
     choices.push({
-      value: 'variations',
+      value: 'takes',
       label: `Browse takes (${subs.length})`,
-      hint: 'select a specific take',
+      hint: 'view all takes of this round',
     });
   }
 
   choices.push(
-    { value: 'restore', label: 'Restore this version', hint: 'overwrite current files' },
-    { value: 'snap-on', label: 'Snap as new take', hint: 'add another take' },
+    { value: 'restore', label: 'Restore this round', hint: 'replace your current files with this snap' },
+    { value: 'snap-on', label: 'Snap as new take', hint: 'save your current files as another take of this round' },
     { value: 'back', label: chalk.dim('Back') },
   );
 
   const action = await p.select({
-    message: `${version.name}`,
+    message: `${version.name}${subs.length > 1 ? chalk.dim(` - take ${subs.findIndex((s) => s.id === versionId) + 1}/${subs.length}`) : ''}`,
     options: choices,
   });
 
@@ -192,7 +239,7 @@ async function versionMenu(
 
   if (action === 'restore') {
     const confirm = await p.confirm({
-      message: 'Restore will overwrite your current files. Continue?',
+      message: 'This will overwrite your current files. Continue?',
     });
     if (p.isCancel(confirm) || !confirm) return;
 
@@ -217,30 +264,74 @@ async function versionMenu(
     return;
   }
 
-  if (action === 'variations') {
+  if (action === 'takes') {
+    const currentIdx = subs.findIndex((s) => s.id === versionId);
     const subChoices = subs.map((s, i) => ({
       value: s.id,
-      label: `${String(i + 1).padStart(2, '0')} - ${new Date(s.timestamp).toLocaleDateString()}`,
-      hint: s.id === versionId ? 'current' : undefined,
+      label: `Take ${String(i + 1).padStart(2, '0')} - ${new Date(s.timestamp).toLocaleDateString()}`,
+      hint: i === currentIdx ? 'current' : undefined,
     }));
+
+    subChoices.push({ value: '__back__', label: chalk.dim('Back'), hint: undefined });
 
     const selected = await p.select({
       message: `Takes of "${version.name}"`,
       options: subChoices,
     });
 
-    if (p.isCancel(selected)) return;
+    if (p.isCancel(selected) || selected === '__back__') return;
+
+    const selectedIdx = subs.findIndex((s) => s.id === selected);
+    const selectedTake = subs[selectedIdx];
+
+    const takeAction = await p.select({
+      message: `Take ${String(selectedIdx + 1).padStart(2, '0')} - ${new Date(selectedTake.timestamp).toLocaleDateString()}`,
+      options: [
+        { value: 'restore', label: 'Restore this take', hint: 'replace your current files' },
+        { value: 'back', label: chalk.dim('Back') },
+      ],
+    });
+
+    if (p.isCancel(takeAction) || takeAction === 'back') return;
 
     const confirm = await p.confirm({
-      message: 'Restore this take?',
+      message: 'This will overwrite your current files. Continue?',
     });
     if (p.isCancel(confirm) || !confirm) return;
 
     const s = p.spinner();
     s.start('Restoring');
     await restoreVersion(selected as string);
-    s.stop('Restored');
+    s.stop(`Restored "${version.name}" (take ${String(selectedIdx + 1).padStart(2, '0')})`);
   }
+}
+
+function showHelp() {
+  const d = chalk.dim;
+  const c = chalk.cyan;
+  const w = chalk.white;
+  const g = chalk.green;
+
+  p.log.message(`
+${w('How designers use Snap:')}
+
+  ${c('\u{1F4E6}')} Task Management App                    ${d('prototype')}
+  ${d('\u2502')}
+  ${d('\u251C\u2500\u2500')} ${c('\u{1F4D6}')} V1 Dashboard New Version           ${d('chapter')}
+  ${d('\u2502')}   ${d('\u251C\u2500\u2500')} Notification Center               ${d('round')}
+  ${d('\u2502')}   ${d('\u2502')}   ${d('\u251C\u2500\u2500')} take 1 ${d('- badge count on bell')}
+  ${d('\u2502')}   ${d('\u2502')}   ${d('\u251C\u2500\u2500')} take 2 ${d('- badge + preview text')}
+  ${d('\u2502')}   ${d('\u2502')}   ${d('\u2514\u2500\u2500')} take 3 ${d('- red dot, no count')}    ${g('\u2190 flip between these')}
+  ${d('\u2502')}   ${d('\u251C\u2500\u2500')} Activity Feed
+  ${d('\u2502')}   ${d('\u2514\u2500\u2500')} Team Settings
+  ${d('\u2502')}
+  ${d('\u2514\u2500\u2500')} ${c('\u{1F4D6}')} V2 Dark Theme                      ${d('another chapter')}
+      ${d('\u2514\u2500\u2500')} Notification Center ${d('(2 takes)')}
+
+  ${w('A round')} is a screen or component you're designing.
+  ${w('A take')} is a slight variation of the same design.
+  Snap the same name again to add another take.
+`);
 }
 
 interface ScenarioInfo {
