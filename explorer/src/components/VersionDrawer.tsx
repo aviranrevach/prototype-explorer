@@ -5,14 +5,29 @@ import {
   ChevronLeft,
   ChevronRight,
   Terminal,
+  HelpCircle,
+  Settings,
+  Sun,
+  Moon,
+  Hash,
+  ChevronsLeftRight,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useExplorerStore, type GroupListItem } from '@/stores/explorerStore';
+import { usePreferencesStore, type Theme, type MenuPosition, type SubNavStyle } from '@/stores/preferencesStore';
 import { cn } from '@/lib/utils';
+import { HowToModal } from './HowToModal';
 
 interface VersionDrawerProps {
   onClose: () => void;
 }
+
+const positions: { value: MenuPosition; label: string; row: number; col: number }[] = [
+  { value: 'top-left', label: 'Top Left', row: 0, col: 0 },
+  { value: 'top-right', label: 'Top Right', row: 0, col: 1 },
+  { value: 'bottom-left', label: 'Bottom Left', row: 1, col: 0 },
+  { value: 'bottom-right', label: 'Bottom Right', row: 1, col: 1 },
+];
 
 export function VersionDrawer({ onClose }: VersionDrawerProps) {
   const navigate = useNavigate();
@@ -32,12 +47,15 @@ export function VersionDrawer({ onClose }: VersionDrawerProps) {
     goSubPrev,
   } = useExplorerStore();
 
+  const { theme, menuPosition, subNavStyle, setTheme, setMenuPosition, setSubNavStyle } = usePreferencesStore();
+
   const current = currentVersion();
   const latest = latestVersion();
   const gVersions = groupVersions();
   const entries = scenarioEntries();
 
   const [collapsedCats, setCollapsedCats] = useState<Record<string, boolean>>({});
+  const [howToOpen, setHowToOpen] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   function toggleCat(cat: string) {
@@ -46,7 +64,7 @@ export function VersionDrawer({ onClose }: VersionDrawerProps) {
 
   function handlePickScenario(entry: { activeVersion: { id: string } }) {
     selectVersion(entry.activeVersion.id);
-    onClose();
+    useExplorerStore.setState({ closeOnLeave: true });
   }
 
   function handlePickGroupItem(item: GroupListItem) {
@@ -60,21 +78,22 @@ export function VersionDrawer({ onClose }: VersionDrawerProps) {
 
   const isList = drawerView === 'groups';
   const isDetail = drawerView === 'scenarios';
+  const isSettings = drawerView === 'settings';
 
   return (
     <div className="flex flex-col">
-      {isDetail && (
+      {(isDetail || isSettings) && (
         <button
           type="button"
           onClick={() => setDrawerView('groups')}
-          className="mb-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/[0.08] bg-zinc-900/[0.97] text-zinc-400 shadow-lg backdrop-blur-2xl transition-colors hover:bg-white/[0.06] hover:text-white"
+          className="mb-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-glass-border bg-glass text-muted-foreground shadow-lg backdrop-blur-2xl transition-colors hover:bg-glass-active hover:text-foreground"
           aria-label="Back to list"
         >
           <ArrowLeft className="h-4 w-4" />
         </button>
       )}
 
-      <div className="flex w-[min(100vw-2rem,22rem)] max-h-[min(80vh,34rem)] flex-col rounded-2xl border border-white/[0.08] bg-zinc-900/[0.97] shadow-[0_24px_80px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.03)] backdrop-blur-2xl animate-slide-up overflow-hidden">
+      <div className="flex w-[min(100vw-2rem,22rem)] max-h-[min(80vh,34rem)] flex-col rounded-2xl border border-glass-border bg-glass shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-2xl animate-slide-up overflow-hidden">
 
         {/* ────── DETAIL: Scenarios for current group ────── */}
         <div
@@ -86,19 +105,19 @@ export function VersionDrawer({ onClose }: VersionDrawerProps) {
               <button
                 type="button"
                 onClick={() => setDrawerView('groups')}
-                className="flex w-full cursor-pointer items-start gap-2 px-4 pt-4 pb-3 text-left transition-colors hover:bg-white/[0.02]"
+                className="flex w-full cursor-pointer items-start gap-2 px-4 pt-4 pb-3 text-left transition-colors hover:bg-glass-hover"
               >
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-[15px] font-bold leading-snug text-white">
+                  <h3 className="text-[15px] font-bold leading-snug text-foreground">
                     {currentGroup.name}
                   </h3>
                   {currentGroup.description && (
-                    <p className="mt-1 line-clamp-2 text-[12px] leading-relaxed text-zinc-400">
+                    <p className="mt-1 line-clamp-2 text-[12px] leading-relaxed text-muted-foreground">
                       {currentGroup.description}
                     </p>
                   )}
                 </div>
-                <ChevronDown className="mt-1 h-4 w-4 shrink-0 text-zinc-500" />
+                <ChevronDown className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" />
               </button>
             )}
 
@@ -108,7 +127,7 @@ export function VersionDrawer({ onClose }: VersionDrawerProps) {
                 return (
                   <div
                     key={cat}
-                    className="mb-2 rounded-xl border border-white/[0.06] bg-white/[0.015]"
+                    className="mb-2 rounded-xl border border-glass-divide bg-glass-subtle"
                   >
                     <button
                       type="button"
@@ -117,11 +136,11 @@ export function VersionDrawer({ onClose }: VersionDrawerProps) {
                     >
                       <ChevronDown
                         className={cn(
-                          'h-3.5 w-3.5 shrink-0 text-zinc-500 transition-transform duration-200',
+                          'h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform duration-200',
                           isCollapsed && '-rotate-90',
                         )}
                       />
-                      <span className="flex-1 text-[13px] font-semibold text-zinc-200">
+                      <span className="flex-1 text-[13px] font-semibold text-foreground">
                         {cat}
                       </span>
                       <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-medium tabular-nums text-primary">
@@ -151,8 +170,8 @@ export function VersionDrawer({ onClose }: VersionDrawerProps) {
                                 className={cn(
                                   'group flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left transition-all duration-150',
                                   isActive
-                                    ? 'bg-primary/12 text-white'
-                                    : 'text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200',
+                                    ? 'bg-primary/12 text-foreground'
+                                    : 'text-muted-foreground hover:bg-glass-hover hover:text-foreground',
                                 )}
                               >
                                 <span
@@ -160,7 +179,7 @@ export function VersionDrawer({ onClose }: VersionDrawerProps) {
                                     'h-1.5 w-1.5 shrink-0 rounded-full transition-colors',
                                     isActive
                                       ? 'bg-primary shadow-[0_0_6px_rgba(109,92,255,0.5)]'
-                                      : 'bg-zinc-700 group-hover:bg-zinc-500',
+                                      : 'bg-inactive group-hover:bg-muted-foreground',
                                   )}
                                 />
                                 <span className="truncate text-[13px] font-medium">
@@ -172,7 +191,7 @@ export function VersionDrawer({ onClose }: VersionDrawerProps) {
                                     'shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-medium',
                                     isActive
                                       ? 'bg-primary/15 text-primary'
-                                      : 'bg-white/[0.06] text-zinc-500',
+                                      : 'bg-glass-active text-muted-foreground',
                                   )}>
                                     Latest
                                   </span>
@@ -184,18 +203,18 @@ export function VersionDrawer({ onClose }: VersionDrawerProps) {
                                       type="button"
                                       onClick={(e) => { e.stopPropagation(); goSubPrev(entry.name); }}
                                       disabled={subIdx <= 1}
-                                      className="flex h-5 w-5 items-center justify-center rounded text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-30"
+                                      className="flex h-5 w-5 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-glass-active hover:text-foreground disabled:opacity-30"
                                     >
                                       <ChevronLeft className="h-3 w-3" />
                                     </button>
-                                    <span className="min-w-[2rem] text-center text-[10px] font-medium tabular-nums text-zinc-500">
+                                    <span className="min-w-[2rem] text-center text-[10px] font-medium tabular-nums text-muted-foreground">
                                       {subIdx}/{subCount}
                                     </span>
                                     <button
                                       type="button"
                                       onClick={(e) => { e.stopPropagation(); goSubNext(entry.name); }}
                                       disabled={subIdx >= subCount}
-                                      className="flex h-5 w-5 items-center justify-center rounded text-zinc-400 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-30"
+                                      className="flex h-5 w-5 items-center justify-center rounded text-muted-foreground transition-colors hover:bg-glass-active hover:text-foreground disabled:opacity-30"
                                     >
                                       <ChevronRight className="h-3 w-3" />
                                     </button>
@@ -203,7 +222,7 @@ export function VersionDrawer({ onClose }: VersionDrawerProps) {
                                 )}
 
                                 {!isActive && showSubNav && (
-                                  <span className="shrink-0 rounded-md bg-white/[0.04] px-1.5 py-0.5 text-[10px] font-medium tabular-nums text-zinc-600">
+                                  <span className="shrink-0 rounded-md bg-glass-hover px-1.5 py-0.5 text-[10px] font-medium tabular-nums text-dim">
                                     {subCount}
                                   </span>
                                 )}
@@ -219,10 +238,10 @@ export function VersionDrawer({ onClose }: VersionDrawerProps) {
 
               {gVersions.length === 0 && (
                 <div className="flex flex-col items-center gap-2 py-8">
-                  <Terminal className="h-5 w-5 text-zinc-600" />
-                  <p className="text-[13px] text-zinc-500">No versions yet</p>
-                  <code className="rounded-md bg-white/[0.04] px-2 py-1 text-[11px] text-zinc-400">
-                    proto-explorer snap "Name"
+                  <Terminal className="h-5 w-5 text-dim" />
+                  <p className="text-[13px] text-muted-foreground">No versions yet</p>
+                  <code className="rounded-md bg-glass-hover px-2 py-1 text-[11px] text-muted-foreground">
+                    snap "Name"
                   </code>
                 </div>
               )}
@@ -230,14 +249,28 @@ export function VersionDrawer({ onClose }: VersionDrawerProps) {
           </div>
         </div>
 
-        {/* ────── LIST: All version groups (always the same) ────── */}
+        {/* ────── LIST: All version groups ────── */}
         <div
           className="grid transition-all duration-300 ease-in-out"
           style={{ gridTemplateRows: isList ? '1fr' : '0fr' }}
         >
           <div className="min-h-0 overflow-hidden">
+            <div className="flex items-center justify-between px-4 pt-4 pb-2">
+              <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Project's Prototypes
+              </h2>
+              <button
+                type="button"
+                onClick={() => setDrawerView('settings')}
+                className="flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-glass-active hover:text-foreground"
+                aria-label="Settings"
+              >
+                <Settings className="h-3.5 w-3.5" />
+              </button>
+            </div>
+
             <div className="py-1">
-              <div className="divide-y divide-white/[0.06]">
+              <div className="divide-y divide-glass-divide">
                 {groupList.map((item) => {
                   const isActive = currentGroup?.id === item.group.id && currentPrototype?.id === item.prototypeId;
                   return (
@@ -248,19 +281,19 @@ export function VersionDrawer({ onClose }: VersionDrawerProps) {
                       className={cn(
                         'group flex w-full items-start gap-3 px-4 py-3 text-left transition-all duration-150',
                         isActive
-                          ? 'bg-white/[0.04]'
-                          : 'hover:bg-white/[0.03]',
+                          ? 'bg-glass-hover'
+                          : 'hover:bg-glass-hover',
                       )}
                     >
                       <div className="min-w-0 flex-1">
                         <p className={cn(
                           'text-[14px] font-semibold leading-snug',
-                          isActive ? 'text-white' : 'text-zinc-300 group-hover:text-white',
+                          isActive ? 'text-foreground' : 'text-foreground/80 group-hover:text-foreground',
                         )}>
                           {item.group.name}
                         </p>
                         {item.group.description && (
-                          <p className="mt-0.5 line-clamp-2 text-[12px] leading-relaxed text-zinc-500">
+                          <p className="mt-0.5 line-clamp-2 text-[12px] leading-relaxed text-muted-foreground">
                             {item.group.description}
                           </p>
                         )}
@@ -269,7 +302,7 @@ export function VersionDrawer({ onClose }: VersionDrawerProps) {
                         'mt-0.5 flex h-6 min-w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold tabular-nums',
                         isActive
                           ? 'bg-primary/15 text-primary'
-                          : 'bg-white/[0.06] text-zinc-500',
+                          : 'bg-glass-active text-muted-foreground',
                       )}>
                         {item.versionCount}
                       </span>
@@ -279,15 +312,128 @@ export function VersionDrawer({ onClose }: VersionDrawerProps) {
               </div>
             </div>
 
-            <div className="shrink-0 border-t border-white/[0.06] px-4 py-2">
-              <p className="flex items-center justify-center gap-1.5 text-[10px] text-zinc-600">
-                <Terminal className="h-3 w-3" />
-                <code className="text-zinc-500">proto-explorer snap</code>
-              </p>
+            <div className="shrink-0 border-t border-glass-divide px-3 py-2">
+              <button
+                type="button"
+                onClick={() => setHowToOpen(true)}
+                className="flex w-full items-center justify-center gap-1.5 rounded-lg py-1.5 text-[12px] font-medium text-muted-foreground transition-colors hover:bg-glass-hover hover:text-foreground"
+              >
+                <HelpCircle className="h-3.5 w-3.5" />
+                How to
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* ────── SETTINGS: Inline settings view ────── */}
+        <div
+          className="grid transition-all duration-300 ease-in-out"
+          style={{ gridTemplateRows: isSettings ? '1fr' : '0fr' }}
+        >
+          <div className="min-h-0 overflow-hidden">
+            <div className="px-4 pt-4 pb-2">
+              <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Settings
+              </h2>
+            </div>
+
+            <div className="space-y-5 px-4 pb-4">
+              {/* Theme */}
+              <div>
+                <p className="mb-2 text-[12px] font-medium text-muted-foreground">Theme</p>
+                <div className="flex gap-2">
+                  {([
+                    { value: 'dark' as Theme, icon: Moon, label: 'Dark' },
+                    { value: 'light' as Theme, icon: Sun, label: 'Light' },
+                  ]).map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setTheme(opt.value)}
+                      className={cn(
+                        'flex flex-1 items-center justify-center gap-2 rounded-xl border py-2.5 text-[13px] font-semibold transition-all duration-150',
+                        theme === opt.value
+                          ? 'border-primary/40 bg-primary/10 text-foreground'
+                          : 'border-glass-divide bg-glass-subtle text-muted-foreground hover:bg-glass-hover hover:text-foreground',
+                      )}
+                    >
+                      <opt.icon className="h-4 w-4" />
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Menu Position */}
+              <div>
+                <p className="mb-2 text-[12px] font-medium text-muted-foreground">Menu Position</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {positions.map((pos) => (
+                    <button
+                      key={pos.value}
+                      type="button"
+                      onClick={() => setMenuPosition(pos.value)}
+                      className={cn(
+                        'group flex flex-col items-center gap-1.5 rounded-xl border py-2.5 transition-all duration-150',
+                        menuPosition === pos.value
+                          ? 'border-primary/40 bg-primary/10'
+                          : 'border-glass-divide bg-glass-subtle hover:bg-glass-hover',
+                      )}
+                    >
+                      <div className="relative h-8 w-12 rounded border border-glass-border bg-glass-subtle">
+                        <div
+                          className={cn(
+                            'absolute h-1.5 w-3 rounded-sm transition-colors',
+                            menuPosition === pos.value ? 'bg-primary' : 'bg-inactive group-hover:bg-muted-foreground',
+                            pos.row === 0 && 'top-1',
+                            pos.row === 1 && 'bottom-1',
+                            pos.col === 0 && 'left-1',
+                            pos.col === 1 && 'right-1',
+                          )}
+                        />
+                      </div>
+                      <span className={cn(
+                        'text-[10px] font-medium',
+                        menuPosition === pos.value ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground',
+                      )}>
+                        {pos.label}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Sub-Version Navigation */}
+              <div>
+                <p className="mb-2 text-[12px] font-medium text-muted-foreground">Variation Navigation</p>
+                <div className="flex gap-2">
+                  {([
+                    { value: 'numbered' as SubNavStyle, icon: Hash, label: 'Numbered' },
+                    { value: 'chevron' as SubNavStyle, icon: ChevronsLeftRight, label: 'Arrows' },
+                  ]).map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setSubNavStyle(opt.value)}
+                      className={cn(
+                        'flex flex-1 items-center justify-center gap-2 rounded-xl border py-2.5 text-[13px] font-semibold transition-all duration-150',
+                        subNavStyle === opt.value
+                          ? 'border-primary/40 bg-primary/10 text-foreground'
+                          : 'border-glass-divide bg-glass-subtle text-muted-foreground hover:bg-glass-hover hover:text-foreground',
+                      )}
+                    >
+                      <opt.icon className="h-4 w-4" />
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {howToOpen && <HowToModal onClose={() => setHowToOpen(false)} />}
     </div>
   );
 }

@@ -1,16 +1,13 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
 import { storage } from '../core/storage.js';
+import { ensureInit } from '../core/ensure-init.js';
 
 export const listCommand = new Command('list')
   .description('List prototypes, groups, and versions')
   .option('-v, --versions', 'Show versions for each group')
   .action(async (opts) => {
-    const config = await storage.getConfig();
-    if (!config) {
-      console.log(chalk.yellow('Not initialized. Run `proto-explorer init` first.'));
-      return;
-    }
+    await ensureInit();
 
     const prototypes = await storage.listPrototypes();
     if (prototypes.length === 0) {

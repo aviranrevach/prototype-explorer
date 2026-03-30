@@ -1,10 +1,10 @@
 {
-  "name": "prototype-explorer",
+  "name": "snap-proto",
   "version": "0.1.0",
   "description": "Organize, version, and explore prototypes inside your coding project",
   "type": "module",
   "bin": {
-    "proto-explorer": "./dist/index.js"
+    "snap": "./dist/index.js"
   },
   "scripts": {
     "dev:cli": "tsup --watch",
@@ -15,6 +15,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@clack/prompts": "^1.1.0",
     "chalk": "^5.4.1",
     "commander": "^13.1.0",
     "cors": "^2.8.5",

@@ -47,7 +47,7 @@ export interface GroupListItem {
   versionCount: number;
 }
 
-export type DrawerView = 'groups' | 'scenarios';
+export type DrawerView = 'groups' | 'scenarios' | 'settings';
 
 interface ExplorerStore {
   prototypes: Prototype[];
@@ -63,6 +63,7 @@ interface ExplorerStore {
   subVersionIndices: Record<string, number>;
   pillVisible: boolean;
   drawerOpen: boolean;
+  closeOnLeave: boolean;
   pendingGroupId: string | null;
 
   fetchPrototypes: () => Promise<void>;
@@ -75,6 +76,7 @@ interface ExplorerStore {
   selectVersion: (versionId: string) => void;
   goSubNext: (scenarioName: string) => void;
   goSubPrev: (scenarioName: string) => void;
+  goToSubIndex: (scenarioName: string, index: number) => void;
 
   togglePill: () => void;
   showPill: () => void;
@@ -109,6 +111,7 @@ export const useExplorerStore = create<ExplorerStore>((set, get) => ({
   subVersionIndices: {},
   pillVisible: true,
   drawerOpen: false,
+  closeOnLeave: false,
   pendingGroupId: null,
 
   fetchPrototypes: async () => {
@@ -165,6 +168,7 @@ export const useExplorerStore = create<ExplorerStore>((set, get) => ({
       drawerView: 'scenarios',
       pendingGroupId: null,
       groupList: updatedGroupList,
+      drawerOpen: get().drawerOpen,
     });
   },
 
@@ -246,12 +250,27 @@ export const useExplorerStore = create<ExplorerStore>((set, get) => ({
     }
   },
 
+  goToSubIndex: (scenarioName, index) => {
+    const current = get().currentVersion();
+    if (!current) return;
+    const key = `${current.category}::${scenarioName}`;
+    const subs = get().groupVersions()
+      .filter((v) => v.name === scenarioName)
+      .sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+    if (index >= 0 && index < subs.length) {
+      set({
+        activeVersionId: subs[index].id,
+        subVersionIndices: { ...get().subVersionIndices, [key]: index },
+      });
+    }
+  },
+
   togglePill: () => set((s) => ({ pillVisible: !s.pillVisible })),
   showPill: () => set({ pillVisible: true }),
   hidePill: () => set({ pillVisible: false }),
-  openDrawer: () => set({ drawerOpen: true, drawerView: 'scenarios' }),
-  closeDrawer: () => set({ drawerOpen: false }),
-  toggleDrawer: () => set((s) => s.drawerOpen ? { drawerOpen: false } : { drawerOpen: true, drawerView: 'scenarios' }),
+  openDrawer: () => set({ drawerOpen: true, drawerView: 'scenarios', closeOnLeave: false }),
+  closeDrawer: () => set({ drawerOpen: false, closeOnLeave: false }),
+  toggleDrawer: () => set((s) => s.drawerOpen ? { drawerOpen: false, closeOnLeave: false } : { drawerOpen: true, drawerView: 'scenarios', closeOnLeave: false }),
 
   currentVersion: () => {
     const { allVersions, activeVersionId, currentGroup } = get();

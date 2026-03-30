@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import { execSync } from 'node:child_process';
 import { storage } from '../core/storage.js';
+import { ensureInit } from '../core/ensure-init.js';
 
 async function generateContextMarkdown(): Promise<string> {
   const config = await storage.getConfig();
@@ -96,11 +97,7 @@ export const contextCommand = new Command('context')
   .argument('[action]', 'show (default), edit, or generate', 'show')
   .option('--yes', 'Skip confirmation when generating')
   .action(async (action: string, opts: { yes?: boolean }) => {
-    const config = await storage.getConfig();
-    if (!config) {
-      console.log(chalk.yellow('Not initialized. Run `proto-explorer init` first.'));
-      return;
-    }
+    await ensureInit();
 
     if (action === 'generate') {
       const md = await generateContextMarkdown();
@@ -110,12 +107,12 @@ export const contextCommand = new Command('context')
         console.log(md);
         console.log(chalk.dim('─'.repeat(60)));
         console.log('');
-        console.log(chalk.cyan('This will be written to .proto-explorer/context.md'));
+        console.log(chalk.cyan('This will be written to .snap/context.md'));
         console.log(chalk.dim('Run with --yes to skip this preview.'));
       }
 
       await storage.writeContext(md);
-      console.log(chalk.green('✓') + ' Context generated → .proto-explorer/context.md');
+      console.log(chalk.green('✓') + ' Context generated → .snap/context.md');
       return;
     }
 
@@ -137,7 +134,7 @@ export const contextCommand = new Command('context')
 
     const text = await storage.readContext();
     if (!text) {
-      console.log(chalk.dim('No context file yet. Run `proto-explorer context generate` to create one.'));
+      console.log(chalk.dim('No context file yet. Run `snap context generate` to create one.'));
       return;
     }
     console.log(text);

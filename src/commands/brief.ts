@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import { execSync } from 'node:child_process';
 import { storage } from '../core/storage.js';
+import { ensureInit } from '../core/ensure-init.js';
 
 export const briefCommand = new Command('brief')
   .description('View or set a brief for a version group')
@@ -10,11 +11,7 @@ export const briefCommand = new Command('brief')
   .option('--edit', 'Open brief in $EDITOR')
   .option('-p, --prototype <id>', 'Prototype ID')
   .action(async (groupId: string | undefined, textParts: string[], opts: { edit?: boolean; prototype?: string }) => {
-    const config = await storage.getConfig();
-    if (!config) {
-      console.log(chalk.yellow('Not initialized. Run `proto-explorer init` first.'));
-      return;
-    }
+    await ensureInit();
 
     const prototypes = await storage.listPrototypes();
     if (prototypes.length === 0) {
@@ -77,7 +74,7 @@ export const briefCommand = new Command('brief')
     const brief = await storage.readGroupBrief(protoId, targetGroup.id);
     if (!brief) {
       console.log(chalk.dim(`No brief for "${targetGroup.name}" yet.`));
-      console.log(chalk.dim(`Set one: proto-explorer brief ${targetGroup.id} "Your brief text"`));
+      console.log(chalk.dim(`Set one: snap brief ${targetGroup.id} "Your brief text"`));
       return;
     }
     console.log(chalk.bold(targetGroup.name));

@@ -84,7 +84,7 @@ export function CommandPalette() {
       action: async () => {
         try {
           const text = await api.context.get();
-          setContextText(text || 'No context file yet.\n\nRun `proto-explorer context generate` to create one.');
+          setContextText(text || 'No context file yet.\n\nRun `snap context generate` to create one.');
         } catch {
           setContextText('Could not load context.');
         }
@@ -165,7 +165,7 @@ export function CommandPalette() {
             </div>
             <div className="border-t border-white/10 px-5 py-3">
               <p className="text-xs text-zinc-500">
-                Edit via CLI: <code className="rounded bg-white/5 px-1.5 py-0.5">proto-explorer context edit</code>
+                Edit via CLI: <code className="rounded bg-white/5 px-1.5 py-0.5">snap context edit</code>
               </p>
             </div>
           </div>

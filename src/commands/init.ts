@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import { storage } from '../core/storage.js';
 
 export const initCommand = new Command('init')
-  .description('Initialize Prototype Explorer in the current project')
+  .description('Initialize Snap in the current project')
   .option('-n, --name <name>', 'Project name')
   .action(async (opts) => {
     const existing = await storage.getConfig();
@@ -14,6 +14,6 @@ export const initCommand = new Command('init')
 
     const projectName = opts.name || process.cwd().split('/').pop() || 'my-project';
     await storage.init(projectName);
-    console.log(chalk.green('✓') + ' Prototype Explorer initialized');
-    console.log(chalk.dim(`  Run ${chalk.cyan('proto-explorer serve')} to open the explorer`));
+    console.log(chalk.green('✓') + ' Snap initialized');
+    console.log(chalk.dim(`  Run ${chalk.cyan('snap serve')} to open the explorer`));
   });

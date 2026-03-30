@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { ViewerPage } from './pages/ViewerPage';
 import { CommandPalette } from './components/CommandPalette';
 import { api } from './lib/api';
+import { usePreferencesStore } from './stores/preferencesStore';
 
 function RedirectToFirst() {
   const [target, setTarget] = useState<string | null>(null);
@@ -18,6 +19,12 @@ function RedirectToFirst() {
 }
 
 export function App() {
+  const theme = usePreferencesStore((s) => s.theme);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
+
   return (
     <BrowserRouter>
       <Routes>

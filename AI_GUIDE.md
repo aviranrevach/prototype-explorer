@@ -1,8 +1,8 @@
-# Using Prototype Explorer with AI
+# Using Snap with AI tools
 
 You don't need to be a developer to use AI with your prototypes. If you can vibe-code — build things by describing what you want and iterating with AI — you already have the instinct. This guide gives that instinct structure.
 
-Prototype Explorer gives your prototypes **structure** — names, groups, categories, tags, notes, briefs. Structure is exactly what AI is good at reading. The combination of the two turns a messy folder of HTML files into something you can reason about, hand off, and build on — with or without AI.
+Snap gives your prototypes **structure** — names, groups, categories, tags, notes, briefs. Structure is exactly what AI is good at reading. The combination of the two turns a messy folder of HTML files into something you can reason about, hand off, and build on — with or without AI.
 
 ---
 
@@ -13,7 +13,7 @@ Your prototypes are already data. Every time you `snap`, you create a named, tag
 The **export command** is your bridge:
 
 ```bash
-proto-explorer export | pbcopy
+snap export | pbcopy
 ```
 
 That one line captures your entire project — context, hierarchy, notes, file listings — and puts it on your clipboard. Paste it into any AI tool and ask whatever you need.
@@ -28,17 +28,17 @@ These aren't steps in a process. They're tools you combine however the moment ca
 
 ### Context file
 
-Your project's memory. Lives at `.proto-explorer/context.md`.
+Your project's memory. Lives at `.snap/context.md`.
 
 ```bash
 # Generate one from your current project structure
-proto-explorer context generate
+snap context generate
 
 # Edit it directly
-proto-explorer context edit
+snap context edit
 
 # View it
-proto-explorer context
+snap context
 ```
 
 Write your goals, audience, brand constraints, design decisions, open questions — anything a teammate (or future-you) would need to pick up the thread. When you run `export`, this context is included automatically.
@@ -49,10 +49,10 @@ Each version group can have a brief — a short description of what that group i
 
 ```bash
 # Set a brief
-proto-explorer brief <group-id> "Exploring bolder typography and dark color palettes"
+snap brief <group-id> "Exploring bolder typography and dark color palettes"
 
 # View it
-proto-explorer brief <group-id>
+snap brief <group-id>
 ```
 
 Briefs show up in exports. When you ask AI to compare two groups, it reads the briefs and understands the intent behind each one.
@@ -62,8 +62,8 @@ Briefs show up in exports. When you ask AI to compare two groups, it reads the b
 You already have these. Use them more.
 
 ```bash
-proto-explorer note <version-id> "Stakeholder liked the hero but wanted more contrast"
-proto-explorer tag <version-id> exploration rejected final
+snap note <version-id> "Stakeholder liked the hero but wanted more contrast"
+snap tag <version-id> exploration rejected final
 ```
 
 Notes become context. Tags become filters. Both make AI responses sharper because they carry intent — not just what the design looks like, but why it exists and where it stands.
@@ -74,16 +74,16 @@ The export command generates a complete, readable summary of your project.
 
 ```bash
 # Full project as markdown (great for pasting into AI)
-proto-explorer export
+snap export
 
 # As structured JSON (better for scripts or precise AI prompts)
-proto-explorer export --json
+snap export --json
 
 # Just one group
-proto-explorer export --group <id>
+snap export --group <id>
 
 # Straight to clipboard
-proto-explorer export --clipboard
+snap export --clipboard
 ```
 
 ---
@@ -97,13 +97,12 @@ Here's how this plays out in practice. These aren't prescriptive — they're exa
 You've been building prototypes in a folder but haven't organized anything yet.
 
 ```
-proto-explorer init
-proto-explorer export
+snap export
 ```
 
 Copy the export and paste it into your AI tool:
 
-> Here's my project structure. Suggest how to organize these files into prototypes, version groups, and scenarios. Output the exact `proto-explorer` commands I should run.
+> Here's my project structure. Suggest how to organize these files into prototypes, version groups, and scenarios. Output the exact commands I should run.
 
 The AI sees your file names, any existing notes, and your context file. It can suggest groupings you might not have thought of.
 
@@ -114,9 +113,9 @@ You have two versions of the same page and want to understand what changed.
 Restore both versions to compare:
 
 ```bash
-proto-explorer restore <version-id-1>
+snap restore <version-id-1>
 # copy the HTML
-proto-explorer restore <version-id-2>
+snap restore <version-id-2>
 ```
 
 Paste both into your AI tool:
@@ -128,7 +127,7 @@ Paste both into your AI tool:
 You've been snapping aggressively but naming lazily.
 
 ```bash
-proto-explorer export --json
+snap export --json
 ```
 
 > Here are my versions with their file contents listed. Suggest meaningful, descriptive names for each based on what they contain. Use the naming style: "01 Hero Section", "02 Dark Mode", etc.
@@ -145,7 +144,7 @@ Then snap the result:
 
 ```bash
 # paste AI output into your files
-proto-explorer snap "01 Overview Panel" --category "Variations"
+snap snap "01 Overview Panel" --category "Variations"
 ```
 
 ### "Stakeholder review time"
@@ -153,7 +152,7 @@ proto-explorer snap "01 Overview Panel" --category "Variations"
 You need to present your work to someone who doesn't live in the codebase.
 
 ```bash
-proto-explorer export --clipboard
+snap export --clipboard
 ```
 
 > Summarize this prototype project for a product review meeting. For each version group, highlight: what was explored, key design decisions, what changed between iterations, and open questions. Keep it concise — 2-3 bullet points per group.
@@ -165,7 +164,7 @@ Someone new is joining the project.
 First, make sure your context is up to date:
 
 ```bash
-proto-explorer context edit
+snap context edit
 ```
 
 Add anything that's not captured in notes and tags — the *why* behind your decisions, dead ends you've already explored, constraints that aren't obvious.
@@ -173,7 +172,7 @@ Add anything that's not captured in notes and tags — the *why* behind your dec
 Then export:
 
 ```bash
-proto-explorer export --clipboard
+snap export --clipboard
 ```
 
 Your teammate can paste this into their AI tool:
@@ -183,7 +182,7 @@ Your teammate can paste this into their AI tool:
 ### "I need UX feedback"
 
 ```bash
-proto-explorer export --group <id> --clipboard
+snap export --group <id> --clipboard
 ```
 
 > Review this prototype group from a UX perspective. Focus on: navigation patterns, visual hierarchy, accessibility concerns, and mobile responsiveness. Be specific about what works and what could improve.
@@ -197,11 +196,11 @@ You don't have any files yet. Start by describing what you want to your AI tool:
 The AI generates the code. Here's the full loop:
 
 1. **Save the output** — paste or write the generated HTML/CSS into your project files
-2. **Snap it** — `proto-explorer snap "01 Welcome Screen" --category "Concepts"`
+2. **Snap it** — `snap snap "01 Welcome Screen" --category "Concepts"`
 3. **Iterate** — ask AI for a variation, save it, snap it again
 
 ```bash
-proto-explorer snap "01 Welcome Screen" --category "Concepts"
+snap snap "01 Welcome Screen" --category "Concepts"
 ```
 
 Now ask for a variation:
@@ -217,36 +216,36 @@ You've been exploring directions and need to present options for a decision.
 Snap each direction as a separate entry:
 
 ```bash
-proto-explorer snap "Option A — Minimal" --category "Concepts" --tag pm-review
-proto-explorer snap "Option B — Bold" --category "Concepts" --tag pm-review
-proto-explorer snap "Option C — Playful" --category "Concepts" --tag pm-review
+snap snap "Option A — Minimal" --category "Concepts" --tag pm-review
+snap snap "Option B — Bold" --category "Concepts" --tag pm-review
+snap snap "Option C — Playful" --category "Concepts" --tag pm-review
 ```
 
 Open the explorer and share the URL (`localhost:4200`). Your PM can click through each option in the drawer, full-screen, no distractions. You can even add notes to each one explaining the thinking:
 
 ```bash
-proto-explorer note <id> "Minimal approach — fastest to build, closest to current design system"
-proto-explorer note <id> "Bold direction — higher risk, bigger impact, needs custom illustrations"
-proto-explorer note <id> "Playful tone — tested well in user interviews but might not fit enterprise"
+snap note <id> "Minimal approach — fastest to build, closest to current design system"
+snap note <id> "Bold direction — higher risk, bigger impact, needs custom illustrations"
+snap note <id> "Playful tone — tested well in user interviews but might not fit enterprise"
 ```
 
 After the meeting, tag the winner:
 
 ```bash
-proto-explorer tag <id> approved
+snap tag <id> approved
 ```
 
 ---
 
 ## Tips
 
-**Write context before you need it.** When you're deep in a prototype, you know why you made every decision. A week later, you won't. Spend two minutes writing it down — `proto-explorer context edit` — and your future self (and your AI tools) will be much sharper.
+**Write context before you need it.** When you're deep in a prototype, you know why you made every decision. A week later, you won't. Spend two minutes writing it down — `snap context edit` — and your future self (and your AI tools) will be much sharper.
 
 **Tag with intent, not just description.** Tags like `exploration`, `final`, `rejected`, `stakeholder-approved` carry more meaning than `blue` or `round-corners`. When AI reads your export, intent tags help it understand which versions matter and which were dead ends.
 
 **Briefs before comparisons.** Before asking AI to compare two version groups, write a brief for each one. "This group explores minimal typography" vs. "This group explores bold gradients" gives AI the framing to make meaningful comparisons instead of just listing visual differences.
 
-**The export is your universal adapter.** ChatGPT, Claude, Cursor, Copilot — they all read markdown. Run `proto-explorer export`, paste it, and ask. The structure is the same regardless of which tool you're using.
+**The export is your universal adapter.** ChatGPT, Claude, Cursor, Copilot — they all read markdown. Run `snap export`, paste it, and ask. The structure is the same regardless of which tool you're using.
 
 **Don't be rigid about it.** There's no "correct" workflow. Some days you'll use AI to generate variants. Other days you'll use it to name things. Sometimes you'll just export your project and ask "what am I missing?" The point is that your prototypes are structured, your context is written, and AI can read both.
 
@@ -256,13 +255,13 @@ proto-explorer tag <id> approved
 
 | Command | What it does |
 |---------|-------------|
-| `proto-explorer context` | View project context |
-| `proto-explorer context edit` | Edit context in your editor |
-| `proto-explorer context generate` | Auto-generate context from project structure |
-| `proto-explorer brief <group-id> "text"` | Set a group brief |
-| `proto-explorer export` | Export full project as markdown |
-| `proto-explorer export --json` | Export as structured JSON |
-| `proto-explorer export --clipboard` | Export straight to clipboard |
-| `proto-explorer export --group <id>` | Export a single group |
-| `proto-explorer note <id> "text"` | Add a note to a version |
-| `proto-explorer tag <id> tags...` | Tag a version with intent |
+| `snap context` | View project context |
+| `snap context edit` | Edit context in your editor |
+| `snap context generate` | Auto-generate context from project structure |
+| `snap brief <group-id> "text"` | Set a group brief |
+| `snap export` | Export full project as markdown |
+| `snap export --json` | Export as structured JSON |
+| `snap export --clipboard` | Export straight to clipboard |
+| `snap export --group <id>` | Export a single group |
+| `snap note <id> "text"` | Add a note to a version |
+| `snap tag <id> tags...` | Tag a version with intent |

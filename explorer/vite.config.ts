@@ -13,7 +13,7 @@ export default defineConfig({
   server: {
     port: 4200,
     proxy: {
-      '/api': 'http://localhost:4200',
+      '/api': 'http://localhost:4201',
     },
   },
 });

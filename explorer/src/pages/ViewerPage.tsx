@@ -1,10 +1,24 @@
 import { useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { useExplorerStore } from '@/stores/explorerStore';
+import { usePreferencesStore } from '@/stores/preferencesStore';
 import { useKeyboard } from '@/hooks/useKeyboard';
 import { useVersionNav } from '@/hooks/useVersionNav';
 import { FloatingPill } from '@/components/FloatingPill';
 import { api } from '@/lib/api';
+
+function HoverZone({ visible, onEnter }: { visible: boolean; onEnter: () => void }) {
+  const menuPosition = usePreferencesStore((s) => s.menuPosition);
+  if (!visible) return null;
+
+  const isBottom = menuPosition.startsWith('bottom');
+  return (
+    <div
+      className={`fixed left-0 right-0 z-30 h-2 cursor-pointer ${isBottom ? 'bottom-0' : 'top-0'}`}
+      onMouseEnter={onEnter}
+    />
+  );
+}
 
 export function ViewerPage() {
   const { prototypeId, versionId } = useParams<{
@@ -81,12 +95,7 @@ export function ViewerPage() {
 
       <FloatingPill prototypeName={currentPrototype?.name || ''} />
 
-      {!pillVisible && (
-        <div
-          className="fixed bottom-0 left-0 right-0 z-30 h-2 cursor-pointer"
-          onMouseEnter={showPill}
-        />
-      )}
+      <HoverZone visible={!pillVisible} onEnter={showPill} />
     </div>
   );
 }
