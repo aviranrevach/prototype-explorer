@@ -4,8 +4,8 @@ import { storage } from '../core/storage.js';
 import { ensureInit } from '../core/ensure-init.js';
 
 export const listCommand = new Command('list')
-  .description('List prototypes, groups, and versions')
-  .option('-v, --versions', 'Show versions for each group')
+  .description('List prototypes, chapters, and rounds')
+  .option('-v, --versions', 'Show rounds for each chapter')
   .action(async (opts) => {
     await ensureInit();
 
@@ -19,7 +19,7 @@ export const listCommand = new Command('list')
       const groups = await storage.listGroups(proto.id);
       const allVersions = await storage.listVersions(proto.id);
       console.log(
-        `${chalk.bold(proto.name)} ${chalk.dim(`(${allVersions.length} versions, ${groups.length} groups)`)} ${chalk.dim(proto.id)}`,
+        `${chalk.bold(proto.name)} ${chalk.dim(`(${allVersions.length} rounds, ${groups.length} chapters)`)} ${chalk.dim(proto.id)}`,
       );
 
       for (const group of groups) {

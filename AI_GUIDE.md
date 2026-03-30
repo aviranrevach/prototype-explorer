@@ -2,7 +2,7 @@
 
 You don't need to be a developer to use AI with your prototypes. If you can vibe-code — build things by describing what you want and iterating with AI — you already have the instinct. This guide gives that instinct structure.
 
-Snap gives your prototypes **structure** — names, groups, categories, tags, notes, briefs. Structure is exactly what AI is good at reading. The combination of the two turns a messy folder of HTML files into something you can reason about, hand off, and build on — with or without AI.
+Snap gives your prototypes **structure** - names, chapters, categories, tags, notes, briefs. Structure is exactly what AI is good at reading. The combination of the two turns a messy folder of HTML files into something you can reason about, hand off, and build on — with or without AI.
 
 ---
 
@@ -43,19 +43,19 @@ snap context
 
 Write your goals, audience, brand constraints, design decisions, open questions — anything a teammate (or future-you) would need to pick up the thread. When you run `export`, this context is included automatically.
 
-### Group briefs
+### Chapter briefs
 
-Each version group can have a brief — a short description of what that group is exploring.
+Each chapter can have a brief - a short description of what that chapter is exploring.
 
 ```bash
 # Set a brief
-snap brief <group-id> "Exploring bolder typography and dark color palettes"
+snap brief <chapter-id> "Exploring bolder typography and dark color palettes"
 
 # View it
-snap brief <group-id>
+snap brief <chapter-id>
 ```
 
-Briefs show up in exports. When you ask AI to compare two groups, it reads the briefs and understands the intent behind each one.
+Briefs show up in exports. When you ask AI to compare two chapters, it reads the briefs and understands the intent behind each one.
 
 ### Notes and tags
 
@@ -79,7 +79,7 @@ snap export
 # As structured JSON (better for scripts or precise AI prompts)
 snap export --json
 
-# Just one group
+# Just one chapter
 snap export --group <id>
 
 # Straight to clipboard
@@ -102,9 +102,9 @@ snap export
 
 Copy the export and paste it into your AI tool:
 
-> Here's my project structure. Suggest how to organize these files into prototypes, version groups, and scenarios. Output the exact commands I should run.
+> Here's my project structure. Suggest how to organize these files into prototypes, chapters, and categories. Output the exact commands I should run.
 
-The AI sees your file names, any existing notes, and your context file. It can suggest groupings you might not have thought of.
+The AI sees your file names, any existing notes, and your context file. It can suggest chapters you might not have thought of.
 
 ### "I made changes but can't tell what's different"
 
@@ -138,13 +138,13 @@ You have a light version of your dashboard and want to explore dark.
 
 Export the current version, paste the HTML into AI:
 
-> Here's my dashboard HTML/CSS. Generate a dark-mode variant that preserves the layout, components, and interactions. Use a zinc/slate color palette with subtle borders. I'll snap this as a new sub-version.
+> Here's my dashboard HTML/CSS. Generate a dark-mode variant that preserves the layout, components, and interactions. Use a zinc/slate color palette with subtle borders. I'll snap this as a new take.
 
 Then snap the result:
 
 ```bash
 # paste AI output into your files
-snap snap "01 Overview Panel" --category "Variations"
+snap "01 Overview Panel" --category "Variations"
 ```
 
 ### "Stakeholder review time"
@@ -155,7 +155,7 @@ You need to present your work to someone who doesn't live in the codebase.
 snap export --clipboard
 ```
 
-> Summarize this prototype project for a product review meeting. For each version group, highlight: what was explored, key design decisions, what changed between iterations, and open questions. Keep it concise — 2-3 bullet points per group.
+> Summarize this prototype project for a product review meeting. For each chapter, highlight: what was explored, key design decisions, what changed between iterations, and open questions. Keep it concise - 2-3 bullet points per chapter.
 
 ### "A teammate is picking this up"
 
@@ -185,7 +185,7 @@ Your teammate can paste this into their AI tool:
 snap export --group <id> --clipboard
 ```
 
-> Review this prototype group from a UX perspective. Focus on: navigation patterns, visual hierarchy, accessibility concerns, and mobile responsiveness. Be specific about what works and what could improve.
+> Review this chapter from a UX perspective. Focus on: navigation patterns, visual hierarchy, accessibility concerns, and mobile responsiveness. Be specific about what works and what could improve.
 
 ### "Start from scratch with AI"
 
@@ -197,17 +197,17 @@ The AI generates the code. Here's the full loop:
 
 1. **Save the output** — paste or write the generated HTML/CSS into your project files
 2. **Snap it** — `snap snap "01 Welcome Screen" --category "Concepts"`
-3. **Iterate** — ask AI for a variation, save it, snap it again
+3. **Iterate** - ask AI for a take, save it, snap it again
 
 ```bash
 snap snap "01 Welcome Screen" --category "Concepts"
 ```
 
-Now ask for a variation:
+Now ask for another take:
 
 > Take this welcome screen and create a version with warmer colors, rounded corners, and illustration placeholders. Keep the same layout and flow.
 
-Save it, snap it with the same name. Now you have two sub-versions of "01 Welcome Screen" you can flip between in the explorer.
+Save it, snap it with the same name. Now you have two takes of "01 Welcome Screen" you can flip between in the explorer.
 
 ### "I want to show my PM three options"
 
@@ -243,7 +243,7 @@ snap tag <id> approved
 
 **Tag with intent, not just description.** Tags like `exploration`, `final`, `rejected`, `stakeholder-approved` carry more meaning than `blue` or `round-corners`. When AI reads your export, intent tags help it understand which versions matter and which were dead ends.
 
-**Briefs before comparisons.** Before asking AI to compare two version groups, write a brief for each one. "This group explores minimal typography" vs. "This group explores bold gradients" gives AI the framing to make meaningful comparisons instead of just listing visual differences.
+**Briefs before comparisons.** Before asking AI to compare two chapters, write a brief for each one. "This chapter explores minimal typography" vs. "This chapter explores bold gradients" gives AI the framing to make meaningful comparisons instead of just listing visual differences.
 
 **The export is your universal adapter.** ChatGPT, Claude, Cursor, Copilot — they all read markdown. Run `snap export`, paste it, and ask. The structure is the same regardless of which tool you're using.
 
@@ -258,10 +258,10 @@ snap tag <id> approved
 | `snap context` | View project context |
 | `snap context edit` | Edit context in your editor |
 | `snap context generate` | Auto-generate context from project structure |
-| `snap brief <group-id> "text"` | Set a group brief |
+| `snap brief <chapter-id> "text"` | Set a chapter brief |
 | `snap export` | Export full project as markdown |
 | `snap export --json` | Export as structured JSON |
 | `snap export --clipboard` | Export straight to clipboard |
-| `snap export --group <id>` | Export a single group |
+| `snap export --group <id>` | Export a single chapter |
 | `snap note <id> "text"` | Add a note to a version |
 | `snap tag <id> tags...` | Tag a version with intent |

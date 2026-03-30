@@ -27,21 +27,21 @@ A snapshot of your code at this exact moment. Like pressing "save" in a way you 
 
 Developers call this a **"commit"**- `snap` is your version of that. Every time you snap, your files are copied and stored safely as a new version. You can keep building without worrying about losing what you had before.
 
-### Version Group
+### Chapter
 
-A round of exploration. When you start a fresh direction for the same prototype, you create a new group. Think of groups as chapters in your design process:
+A round of exploration. When you start a fresh direction for the same prototype, you create a new chapter. Think of chapters as phases in your design process:
 
 - "Dashboard v1" - your first take
 - "Dashboard v2" - new direction after feedback
 - "Dashboard v3" - the refined version. Maybe even final!
 
-### Category
+### Round
 
-A label you choose to organize entries within a group. "Scenarios", "Concepts", "Variations", "Flows"- whatever fits how you think about the work. There's no right answer.
+A named entry within a chapter. "Homepage", "Login Page", "Settings" - each is a round you're working on.
 
-### Sub-versions
+### Take
 
-When you snap the same name twice, the snaps stack up. You flip between them with arrow keys, left and right, both in the drawer and on the floating pill. This is like having an undo history for one specific design. You can always go back to see how it looked three iterations ago.
+When you snap the same name twice, the snaps stack up as takes. You flip between them with arrow keys or numbered buttons, both in the drawer and on the floating pill. This is like having an undo history for one specific design. You can always go back to see how it looked three iterations ago.
 
 ### Restore
 
@@ -81,7 +81,7 @@ Browse versions, create snaps, switch groups, and restore - all from an interact
 These commands are optional - use them when you want more structure:
 
 ```bash
-snap group "Dashboard v2"    # start a new round of exploration
+snap chapter "Dashboard v2"  # start a new chapter of exploration
 snap new "Settings Page"     # create a separate prototype
 ```
 
@@ -91,7 +91,7 @@ snap new "Settings Page"     # create a separate prototype
 
 ### Floating pill
 
-A minimal pill sits at the bottom-left, showing the current group name and active scenario. If a scenario has multiple sub-versions, numbered buttons or arrow buttons appear to flip between them.
+A minimal pill sits at the bottom-left, showing the current chapter name and active round. If a round has multiple takes, numbered buttons or arrow buttons appear to flip between them.
 
 **Toggle visibility:** `Cmd + .` or hover the bottom edge of the screen.
 
@@ -99,9 +99,9 @@ A minimal pill sits at the bottom-left, showing the current group name and activ
 
 Click the pill to open the drawer:
 
-**Level 1 - Scenarios:** Shows all categories and entries within the current version group. Click any entry to load its preview. Use the `< 2/3 >` arrows to flip sub-versions of the same entry.
+**Level 1 - Rounds:** Shows all categories and entries within the current chapter. Click any entry to load its preview. Use the `< 2/3 >` arrows to flip takes of the same round.
 
-**Level 2 - Version groups:** Click the header or the chevron to collapse to the group list. This shows every version group across all prototypes, always the same list regardless of where you are. Click any group to drill in.
+**Level 2 - Chapters:** Click the header or the chevron to collapse to the chapter list. This shows every chapter across all prototypes, always the same list regardless of where you are. Click any chapter to drill in.
 
 ### Command palette
 
@@ -121,17 +121,17 @@ Takes a snapshot of your current files and saves it as a named version.
 snap "Ideal Flow"
 ```
 
-Snap the same name again to create a sub-version you can flip between:
+Snap the same name again to create another take you can flip between:
 
 ```bash
-snap "Ideal Flow"   # now you have 2 sub-versions
+snap "Ideal Flow"   # now you have 2 takes
 ```
 
 **Snap options:** you can control where the snap lands and how it's labeled:
 
 ```bash
-# Put it in a specific group
-snap "Ideal Flow" --group <group-id>
+# Put it in a specific chapter
+snap "Ideal Flow" --group <chapter-id>
 
 # Label it under a custom category (default is "Scenarios")
 snap "Empty State" --category "Edge Cases"
@@ -165,11 +165,11 @@ Deletes a version permanently.
 
 ### Organizing
 
-**`snap group <name>`**
-Creates a version group inside your prototype - a new round of exploration.
+**`snap chapter <name>`**
+Creates a new chapter inside your prototype - a new round of exploration.
 
 ```bash
-snap group "Checkout v2"
+snap chapter "Checkout v2"
 ```
 
 **`snap new <name>`**
@@ -211,9 +211,9 @@ snap context edit       # open in your editor
 snap context            # view in terminal
 ```
 
-**`snap brief <group-id> <text>`**
-Sets a short brief on a version group - what this round of exploration is about.
-*Use before asking AI to compare groups, or when handing off to a teammate.*
+**`snap brief <chapter-id> <text>`**
+Sets a short brief on a chapter - what this round of exploration is about.
+*Use before asking AI to compare chapters, or when handing off to a teammate.*
 
 ```bash
 snap brief abc123 "Exploring bold typography and dark color palettes"
@@ -242,10 +242,10 @@ These prompts work as-is. AI reads your current files and does the work.
 
 | What you want | Say this to AI | Then save the result |
 | --- | --- | --- |
-| **Simplify a busy layout** | *"This dashboard has too much going on. Keep the **data table** and **filters**, remove the secondary charts, tighten the spacing."* | `snap "Dashboard Overview"` - snapping the same name stacks sub-versions you can flip between |
+| **Simplify a busy layout** | *"This dashboard has too much going on. Keep the **data table** and **filters**, remove the secondary charts, tighten the spacing."* | `snap "Dashboard Overview"` - snapping the same name stacks takes you can flip between |
 | **Generate multiple options** | *"Give me three variations of this **settings page**: one **minimal**, one with a **bold sidebar**, one with **grouped cards**."* | Snap each one: `snap "Option A - Minimal"`, `snap "Option B - Bold Sidebar"`, etc. |
 | **Iterate on a direction** | *"Make the **hero section** bolder: bigger type, more contrast, and swap the illustration for a **full-bleed photo**."* | `snap "Hero - Bold"` |
-| **Explore concepts** | *"Explore 5 different directions for this **settings page**. Try different layouts, visual hierarchies, and grouping styles. After each one, run `snap "Settings Concepts"` so I can flip through them."* | AI generates each direction one at a time. Snapping the same name after each one creates sub-versions: Settings Concepts `< 1/5 >` you flip through with arrow keys |
+| **Explore concepts** | *"Explore 5 different directions for this **settings page**. Try different layouts, visual hierarchies, and grouping styles. After each one, run `snap "Settings Concepts"` so I can flip through them."* | AI generates each direction one at a time. Snapping the same name after each one creates takes: Settings Concepts `< 1/5 >` you flip through with arrow keys |
 | **Fix or polish** | *"The spacing feels off on **mobile**. Tighten the **card grid** and make the **nav** collapse into a hamburger."* | `snap "Mobile Polish"` |
 
 ### One command first, then talk
@@ -266,8 +266,8 @@ Then paste it into your AI tool and ask:
 | --- | --- |
 | **Combine pieces from different versions** | *"Take the **chat widget** from the **Support Page** snap and the **sidebar nav** from **Dashboard Overview**. Combine them into one page with the nav on the left and chat on the right."* |
 | **Compare two versions** | *"Compare these two versions of the **onboarding flow**. Describe the differences the way a designer would: layout, color, typography, what got added or removed."* |
-| **Organize your mess** | *"Here's everything I have. Suggest how to organize these into **prototypes**, **groups**, and **categories**. Give me the exact commands to run."* |
-| **Summarize for stakeholders** | *"Summarize what I've been exploring. For each **version group**, highlight the key design decisions and open questions. Keep it to 2-3 bullets per group."* |
+| **Organize your mess** | *"Here's everything I have. Suggest how to organize these into **prototypes**, **chapters**, and **categories**. Give me the exact commands to run."* |
+| **Summarize for stakeholders** | *"Summarize what I've been exploring. For each **chapter**, highlight the key design decisions and open questions. Keep it to 2-3 bullets per chapter."* |
 | **Get feedback on a direction** | *"Look at my latest snaps in the **Dashboard v2** group. What's working? What feels inconsistent? What would you push further?"* |
 
 In **Cursor**, AI can read directly from `.proto-explorer/`, no export needed. The export step is only for tools like **ChatGPT or Claude** that don't have file access.
@@ -280,7 +280,7 @@ The more context your project has, the better AI's suggestions get. These build 
 | --- | --- |
 | **Auto-generate project context** | `snap context generate` - scans your project and creates a context summary |
 | **Edit it yourself** | `snap context edit` - add goals, audience, constraints, design decisions |
-| **Set a brief on a version group** | `snap brief <group-id> "Exploring bolder typography and dark palettes"` |
+| **Set a brief on a chapter** | `snap brief <chapter-id> "Exploring bolder typography and dark palettes"` |
 
 Context and briefs are included automatically whenever you export, so AI always has the full picture.
 

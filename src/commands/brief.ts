@@ -5,8 +5,8 @@ import { storage } from '../core/storage.js';
 import { ensureInit } from '../core/ensure-init.js';
 
 export const briefCommand = new Command('brief')
-  .description('View or set a brief for a version group')
-  .argument('[group-id]', 'Group ID (defaults to first group of first prototype)')
+  .description('View or set a brief for a chapter')
+  .argument('[group-id]', 'Chapter ID (defaults to first chapter of first prototype)')
   .argument('[text...]', 'Brief text to set (omit to view)')
   .option('--edit', 'Open brief in $EDITOR')
   .option('-p, --prototype <id>', 'Prototype ID')
@@ -32,7 +32,7 @@ export const briefCommand = new Command('brief')
 
     const groups = await storage.listGroups(protoId);
     if (groups.length === 0) {
-      console.log(chalk.dim('No groups in this prototype.'));
+      console.log(chalk.dim('No chapters in this prototype.'));
       return;
     }
 
@@ -41,8 +41,8 @@ export const briefCommand = new Command('brief')
       : groups[0];
 
     if (!targetGroup) {
-      console.log(chalk.red(`Group "${groupId}" not found.`));
-      console.log(chalk.dim('Available groups:'));
+      console.log(chalk.red(`Chapter "${groupId}" not found.`));
+      console.log(chalk.dim('Available chapters:'));
       for (const g of groups) {
         console.log(chalk.dim(`  ${g.name} ${chalk.dim(g.id)}`));
       }
@@ -53,7 +53,7 @@ export const briefCommand = new Command('brief')
       const editor = process.env.EDITOR || process.env.VISUAL || 'nano';
       const existing = await storage.readGroupBrief(protoId, targetGroup.id);
       if (!existing) {
-        await storage.writeGroupBrief(protoId, targetGroup.id, `# ${targetGroup.name}\n\n<!-- Describe this version group's direction, goals, and constraints -->\n`);
+        await storage.writeGroupBrief(protoId, targetGroup.id, `# ${targetGroup.name}\n\n<!-- Describe this chapter's direction, goals, and constraints -->\n`);
       }
       try {
         const briefPath = `${storage.root()}/prototypes/${protoId}/groups/${targetGroup.id}/brief.md`;

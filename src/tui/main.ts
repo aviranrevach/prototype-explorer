@@ -24,7 +24,7 @@ export async function runMainTUI(state: TUIState): Promise<void> {
     const groups = await storage.listGroups(state.prototypeId);
     const currentGroup = groups.find((g) => g.id === currentGroupId) || groups[0];
     if (!currentGroup) {
-      p.log.error('No groups found.');
+      p.log.error('No chapters found.');
       return;
     }
     currentGroupId = currentGroup.id;
@@ -39,7 +39,7 @@ export async function runMainTUI(state: TUIState): Promise<void> {
 
     for (const scenario of scenarios) {
       const star = scenario.starred ? chalk.yellow(' \u2605') : '';
-      const subCount = scenario.count > 1 ? chalk.dim(` (${scenario.count} variations)`) : '';
+      const subCount = scenario.count > 1 ? chalk.dim(` (${scenario.count} takes)`) : '';
       choices.push({
         value: `version:${scenario.latestId}`,
         label: `${scenario.name}${star}${subCount}`,
@@ -49,13 +49,13 @@ export async function runMainTUI(state: TUIState): Promise<void> {
 
     choices.push(
       { value: 'action:snap', label: chalk.green('\u2795 New snap'), hint: 'save current state' },
-      { value: 'action:group', label: chalk.cyan('\u{1F4C1} Switch group'), hint: currentGroup.name },
+      { value: 'action:group', label: chalk.cyan('\u{1F4C1} Switch chapter'), hint: currentGroup.name },
       { value: 'action:serve', label: chalk.magenta('\u{1F310} Open explorer'), hint: 'localhost:4200' },
       { value: 'action:quit', label: chalk.dim('\u{1F6AA} Quit') },
     );
 
     const header = `${chalk.bold(proto.name)} ${chalk.dim('\u203A')} ${chalk.cyan(currentGroup.name)}`;
-    const versionCount = versions.length === 1 ? '1 version' : `${versions.length} versions`;
+    const versionCount = versions.length === 1 ? '1 round' : `${versions.length} rounds`;
 
     const selection = await p.select({
       message: `${header} ${chalk.dim(`(${versionCount})`)}`,
@@ -127,10 +127,10 @@ async function switchGroup(
     hint: g.id === currentGroupId ? 'current' : undefined,
   }));
 
-  choices.push({ value: '__new__', label: chalk.green('+ Create new group'), hint: undefined });
+  choices.push({ value: '__new__', label: chalk.green('+ Create new chapter'), hint: undefined });
 
   const selected = await p.select({
-    message: 'Switch group',
+    message: 'Switch chapter',
     options: choices,
   });
 
@@ -138,14 +138,14 @@ async function switchGroup(
 
   if (selected === '__new__') {
     const name = await p.text({
-      message: 'Group name',
+      message: 'Chapter name',
       placeholder: 'v2',
     });
 
     if (p.isCancel(name)) return null;
 
     const group = await storage.createGroup(prototypeId, { name });
-    p.log.success(`Group "${name}" created`);
+    p.log.success(`Chapter "${name}" created`);
     return group.id;
   }
 
@@ -161,7 +161,7 @@ async function versionMenu(
   const version = await storage.getVersion(versionId);
   if (!version) return;
 
-  // Get all sub-versions
+  // Get all takes
   const allVersions = await storage.listVersions(prototypeId, groupId);
   const subs = allVersions
     .filter((v) => v.name === version.name && v.category === version.category)
@@ -172,14 +172,14 @@ async function versionMenu(
   if (subs.length > 1) {
     choices.push({
       value: 'variations',
-      label: `Browse variations (${subs.length})`,
-      hint: 'select a specific sub-version',
+      label: `Browse takes (${subs.length})`,
+      hint: 'select a specific take',
     });
   }
 
   choices.push(
     { value: 'restore', label: 'Restore this version', hint: 'overwrite current files' },
-    { value: 'snap-on', label: 'Snap as variation', hint: 'add a new sub-version' },
+    { value: 'snap-on', label: 'Snap as new take', hint: 'add another take' },
     { value: 'back', label: chalk.dim('Back') },
   );
 
@@ -213,7 +213,7 @@ async function versionMenu(
       tags: [],
       author: defaultAuthor,
     });
-    s.stop(`New variation of "${version.name}" saved (${v.fileCount} files)`);
+    s.stop(`New take of "${version.name}" saved (${v.fileCount} files)`);
     return;
   }
 
@@ -225,14 +225,14 @@ async function versionMenu(
     }));
 
     const selected = await p.select({
-      message: `Variations of "${version.name}"`,
+      message: `Takes of "${version.name}"`,
       options: subChoices,
     });
 
     if (p.isCancel(selected)) return;
 
     const confirm = await p.confirm({
-      message: 'Restore this variation?',
+      message: 'Restore this take?',
     });
     if (p.isCancel(confirm) || !confirm) return;
 

@@ -95,7 +95,7 @@ export function VersionDrawer({ onClose }: VersionDrawerProps) {
 
       <div className="flex w-[min(100vw-2rem,22rem)] max-h-[min(80vh,34rem)] flex-col rounded-2xl border border-glass-border bg-glass shadow-[0_24px_80px_rgba(0,0,0,0.35)] backdrop-blur-2xl animate-slide-up overflow-hidden">
 
-        {/* ────── DETAIL: Scenarios for current group ────── */}
+        {/* ────── DETAIL: Rounds for current chapter ────── */}
         <div
           className="grid transition-all duration-300 ease-in-out"
           style={{ gridTemplateRows: isDetail ? '1fr' : '0fr' }}
@@ -249,7 +249,7 @@ export function VersionDrawer({ onClose }: VersionDrawerProps) {
           </div>
         </div>
 
-        {/* ────── LIST: All version groups ────── */}
+        {/* ────── LIST: All chapters ────── */}
         <div
           className="grid transition-all duration-300 ease-in-out"
           style={{ gridTemplateRows: isList ? '1fr' : '0fr' }}
@@ -403,9 +403,9 @@ export function VersionDrawer({ onClose }: VersionDrawerProps) {
                 </div>
               </div>
 
-              {/* Sub-Version Navigation */}
+              {/* Take Navigation */}
               <div>
-                <p className="mb-2 text-[12px] font-medium text-muted-foreground">Variation Navigation</p>
+                <p className="mb-2 text-[12px] font-medium text-muted-foreground">Take Navigation</p>
                 <div className="flex gap-2">
                   {([
                     { value: 'numbered' as SubNavStyle, icon: Hash, label: 'Numbered' },

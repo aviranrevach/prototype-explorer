@@ -23,7 +23,7 @@ export async function ensureInit(): Promise<{ prototypeId: string; groupId: stri
   if (groups.length === 0) {
     const group = await storage.createGroup(prototypeId, { name: 'Default' });
     groups = [group];
-    console.log(chalk.dim('  Created default group'));
+    console.log(chalk.dim('  Created default chapter'));
   }
 
   return { prototypeId, groupId: groups[0].id };

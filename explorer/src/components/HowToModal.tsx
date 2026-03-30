@@ -38,7 +38,7 @@ const steps = [
     title: 'Interactive',
     subtitle: 'Manage from terminal',
     command: 'snap',
-    description: 'Run with no arguments to browse versions, snap, restore, and switch groups interactively.',
+    description: 'Run with no arguments to browse rounds, snap, restore, and switch chapters interactively.',
     color: 'from-violet-500/20 to-purple-500/20',
     iconBg: 'bg-violet-500/15 text-violet-400',
   },

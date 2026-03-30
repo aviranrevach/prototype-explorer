@@ -27,7 +27,7 @@ export async function runWelcome(): Promise<{ prototypeId: string; groupId: stri
   s.stop('Project created');
 
   const groupName = await p.text({
-    message: 'First group name',
+    message: 'First chapter name',
     placeholder: 'v1',
     defaultValue: 'v1',
   });
