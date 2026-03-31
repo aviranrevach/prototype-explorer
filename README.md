@@ -63,8 +63,33 @@ npm install snap-proto
 | --- | --- | --- |
 | **1. Snap** | `snap "Homepage"` | Saves a snapshot of your current files. Auto-initializes on first run. |
 | **2. Explore** | `snap serve` | Opens the explorer at `http://localhost:4200` with a floating pill to browse versions. |
+| **3. Action** | `snap action` | Shows your full project tree and what you can do next. Great for working with AI. |
 
-That's it. Two commands to get started.
+That's it. Three commands to get started.
+
+### Project overview
+
+Run `snap action` to see your full project at a glance:
+
+```
+📦 Task Management App
+[01] 📖 V1 Dashboard
+ ├─ 1.1 Notification Center (3 takes) ← you are here, working on take 3
+ ├─ 1.2 Activity Feed (1 take)
+ └─ 1.3 Team Settings (1 take)
+[02] 📖 V2 Dark Theme
+ ├─ 2.1 Notification Center (2 takes)
+ └─ 2.2 Activity Feed (1 take)
+
+What would you like to do next?
+ 1. SNAP current files (new round or take)
+ 2. START a new chapter
+ 3. SWITCH to a different snap to build from
+ 4. OPEN visual explorer
+ 5. MORE things you can do
+```
+
+Every round is numbered so you can reference them easily: "add a take to 1.1", "compare 1.1 and 2.1", "switch to 2.2".
 
 ### Interactive mode
 
@@ -74,7 +99,7 @@ Run `snap` with no arguments to open the interactive terminal UI:
 snap
 ```
 
-Browse versions, create snaps, switch groups, and restore - all from an interactive menu. On first run, it walks you through setup.
+Browse rounds, create snaps, switch chapters, and restore - all from an interactive menu. On first run, it walks you through setup.
 
 ### Organize when you're ready
 
@@ -110,6 +135,11 @@ Click the pill to open the drawer:
 ---
 
 ## Every command, explained
+
+### Overview
+
+**`snap action`**
+Shows your full project tree with numbered rounds and chapters, plus a menu of what you can do next. Use this when working with AI - the numbered references make it easy to talk about specific rounds.
 
 ### Snapshots and versions
 
@@ -234,7 +264,11 @@ snap export --group <id> # just one group
 
 ## Using with AI
 
-You don't need to memorize commands. Most of the time, you just talk to AI and it works. Sometimes you need to run one command first to give AI your project data. We'll tell you when.
+You don't need to memorize commands. Most of the time, you just talk to AI and it works.
+
+### Start with `snap action`
+
+Run `snap action` to show your project tree. AI sees the numbered rounds and can reference them directly. Then just tell it what you want: "add a take to 1.1", "compare 1.1 and 2.1", "start a new chapter called Dark Theme".
 
 ### Just talk - no commands needed
 

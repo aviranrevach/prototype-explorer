@@ -13,6 +13,7 @@ import { rmCommand } from './commands/rm.js';
 import { contextCommand } from './commands/context.js';
 import { briefCommand } from './commands/brief.js';
 import { exportCommand } from './commands/export.js';
+import { actionCommand } from './commands/action.js';
 
 const program = new Command();
 
@@ -35,6 +36,7 @@ program
     }
   });
 
+program.addCommand(actionCommand);
 program.addCommand(initCommand);
 program.addCommand(serveCommand);
 program.addCommand(snapCommand, { hidden: true });

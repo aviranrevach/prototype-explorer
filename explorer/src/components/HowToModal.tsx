@@ -8,6 +8,7 @@ import {
   Star,
   Keyboard,
   Play,
+  LayoutList,
 } from 'lucide-react';
 
 interface HowToModalProps {
@@ -32,6 +33,15 @@ const steps = [
     description: 'Opens the visual explorer at localhost:4200 to flip between all your snapshots.',
     color: 'from-pink-500/20 to-rose-500/20',
     iconBg: 'bg-pink-500/15 text-pink-400',
+  },
+  {
+    icon: LayoutList,
+    title: 'Action',
+    subtitle: 'See your project & next steps',
+    command: 'snap action',
+    description: 'Shows your full project tree with numbered rounds. Reference them in chat: "add a take to 1.1", "compare 1.1 and 2.1".',
+    color: 'from-emerald-500/20 to-teal-500/20',
+    iconBg: 'bg-emerald-500/15 text-emerald-400',
   },
   {
     icon: Terminal,

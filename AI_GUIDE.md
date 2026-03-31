@@ -10,13 +10,19 @@ Snap gives your prototypes **structure** - names, chapters, categories, tags, no
 
 Your prototypes are already data. Every time you `snap`, you create a named, tagged, categorized record of a design moment. AI can read that record and do useful things with it — organize, compare, name, generate, summarize, critique.
 
-The **export command** is your bridge:
+The **action command** is your starting point:
 
 ```bash
-snap export | pbcopy
+snap action
 ```
 
-That one line captures your entire project — context, hierarchy, notes, file listings — and puts it on your clipboard. Paste it into any AI tool and ask whatever you need.
+This shows your full project tree with numbered rounds. AI sees the numbers and you can reference them naturally: "add a take to 1.1", "compare 1.1 and 2.1", "restore 2.2".
+
+For tools without file access (ChatGPT, Claude web), use **export** to share your project:
+
+```bash
+snap export --clipboard
+```
 
 Don't overthink which prompt to use. The structure does the heavy lifting.
 
@@ -255,6 +261,7 @@ snap tag <id> approved
 
 | Command | What it does |
 |---------|-------------|
+| `snap action` | Show project tree and available actions |
 | `snap context` | View project context |
 | `snap context edit` | Edit context in your editor |
 | `snap context generate` | Auto-generate context from project structure |
