@@ -3,12 +3,15 @@ import chalk from 'chalk';
 import { storage } from '../core/storage.js';
 import { createSnapshot } from '../core/snapshot.js';
 import { restoreVersion } from '../core/snapshot.js';
-import type { PrototypeVersion, VersionGroup } from '../core/types.js';
+import { buildProjectTree, printProjectTree } from '../core/project-tree.js';
+import type { VersionGroup } from '../core/types.js';
 
 interface TUIState {
   prototypeId: string;
   groupId: string;
 }
+
+let hasShownTip = false;
 
 export async function runMainTUI(state: TUIState): Promise<void> {
   const config = (await storage.getConfig())!;
@@ -29,9 +32,23 @@ export async function runMainTUI(state: TUIState): Promise<void> {
     }
     currentGroupId = currentGroup.id;
 
-    const versions = await storage.listVersions(state.prototypeId, currentGroupId);
-    const scenarios = buildScenarios(versions);
+    // Show the project tree (same format as snap action)
+    const tree = await buildProjectTree(state.prototypeId);
+    console.log('');
+    printProjectTree(tree);
+    console.log('');
 
+    // Show tip about snap action once
+    if (!hasShownTip) {
+      p.log.info(`Tip: run ${chalk.cyan('snap action')} to see this overview when working with AI.`);
+      hasShownTip = true;
+    }
+
+    // Find scenarios for current chapter
+    const currentChapter = tree.chapters.find((ch) => ch.group.id === currentGroupId);
+    const scenarios = currentChapter?.scenarios || [];
+
+    // Build choices with numbered references
     const choices: { value: string; label: string; hint?: string }[] = [];
 
     if (scenarios.length === 0) {
@@ -43,10 +60,16 @@ export async function runMainTUI(state: TUIState): Promise<void> {
     } else {
       for (const scenario of scenarios) {
         const star = scenario.starred ? chalk.yellow(' \u2605') : '';
-        const subCount = scenario.count > 1 ? chalk.dim(` (${scenario.count} takes)`) : '';
+        const takeLabel = scenario.count > 1 ? chalk.dim(` (${scenario.count} takes)`) : '';
+
+        let marker = '';
+        if (tree.activeVersionId && scenario.versions.some((v) => v.id === tree.activeVersionId)) {
+          marker = chalk.green(' \u2713');
+        }
+
         choices.push({
           value: `version:${scenario.latestId}`,
-          label: `${scenario.name}${star}${subCount}`,
+          label: `${chalk.white(scenario.roundNum)} ${scenario.name}${star}${takeLabel}${marker}`,
           hint: scenario.tags.length > 0 ? scenario.tags.join(', ') : undefined,
         });
       }
@@ -63,13 +86,8 @@ export async function runMainTUI(state: TUIState): Promise<void> {
       { value: 'action:quit', label: chalk.dim('\u{1F6AA} Quit') },
     );
 
-    const header = `${chalk.bold(proto.name)} ${chalk.dim('\u203A')} ${chalk.cyan(currentGroup.name)}`;
-    const versionCount = versions.length === 0
-      ? 'empty'
-      : versions.length === 1 ? '1 round' : `${versions.length} rounds`;
-
     const selection = await p.select({
-      message: `${header} ${chalk.dim(`(${versionCount})`)}`,
+      message: 'What would you like to do?',
       options: choices,
     });
 
@@ -84,6 +102,11 @@ export async function runMainTUI(state: TUIState): Promise<void> {
       if (id === 'quit') {
         p.outro('Bye!');
         return;
+      }
+
+      if (id === 'help') {
+        showHelp();
+        continue;
       }
 
       if (id === 'snap') {
@@ -115,11 +138,6 @@ export async function runMainTUI(state: TUIState): Promise<void> {
       if (id === 'group') {
         const newGroup = await switchGroup(state.prototypeId, groups, currentGroupId);
         if (newGroup) currentGroupId = newGroup;
-        continue;
-      }
-
-      if (id === 'help') {
-        showHelp();
         continue;
       }
 
@@ -155,7 +173,9 @@ export async function runMainTUI(state: TUIState): Promise<void> {
     }
 
     if (type === 'version') {
-      await versionMenu(state.prototypeId, id, currentGroupId, config.defaultAuthor);
+      // Find the scenario by latestId to pass the roundNum
+      const scenario = scenarios.find((s) => s.latestId === id);
+      await versionMenu(state.prototypeId, id, currentGroupId, config.defaultAuthor, scenario?.roundNum);
     }
   }
 }
@@ -185,7 +205,7 @@ async function switchGroup(
       message: 'Chapter name',
       placeholder: 'v2',
       validate: (val) => {
-        if (!val.trim()) return 'Name cannot be empty';
+        if (!val?.trim()) return 'Name cannot be empty';
       },
     });
 
@@ -204,6 +224,7 @@ async function versionMenu(
   versionId: string,
   groupId: string,
   defaultAuthor: string,
+  roundNum?: string,
 ): Promise<void> {
   const version = await storage.getVersion(versionId);
   if (!version) return;
@@ -230,8 +251,13 @@ async function versionMenu(
     { value: 'back', label: chalk.dim('Back') },
   );
 
+  const label = roundNum ? `${roundNum} ${version.name}` : version.name;
+  const takeInfo = subs.length > 1
+    ? chalk.dim(` - take ${subs.findIndex((s) => s.id === versionId) + 1}/${subs.length}`)
+    : '';
+
   const action = await p.select({
-    message: `${version.name}${subs.length > 1 ? chalk.dim(` - take ${subs.findIndex((s) => s.id === versionId) + 1}/${subs.length}`) : ''}`,
+    message: `${label}${takeInfo}`,
     options: choices,
   });
 
@@ -318,51 +344,21 @@ ${w('How designers use Snap:')}
   ${c('\u{1F4E6}')} Task Management App                    ${d('prototype')}
   ${d('\u2502')}
   ${d('\u251C\u2500\u2500')} ${c('\u{1F4D6}')} V1 Dashboard New Version           ${d('chapter')}
-  ${d('\u2502')}   ${d('\u251C\u2500\u2500')} Notification Center               ${d('round')}
+  ${d('\u2502')}   ${d('\u251C\u2500\u2500')} ${w('1.1')} Notification Center           ${d('round')}
   ${d('\u2502')}   ${d('\u2502')}   ${d('\u251C\u2500\u2500')} take 1 ${d('- badge count on bell')}
   ${d('\u2502')}   ${d('\u2502')}   ${d('\u251C\u2500\u2500')} take 2 ${d('- badge + preview text')}
   ${d('\u2502')}   ${d('\u2502')}   ${d('\u2514\u2500\u2500')} take 3 ${d('- red dot, no count')}    ${g('\u2190 flip between these')}
-  ${d('\u2502')}   ${d('\u251C\u2500\u2500')} Activity Feed
-  ${d('\u2502')}   ${d('\u2514\u2500\u2500')} Team Settings
+  ${d('\u2502')}   ${d('\u251C\u2500\u2500')} ${w('1.2')} Activity Feed
+  ${d('\u2502')}   ${d('\u2514\u2500\u2500')} ${w('1.3')} Team Settings
   ${d('\u2502')}
   ${d('\u2514\u2500\u2500')} ${c('\u{1F4D6}')} V2 Dark Theme                      ${d('another chapter')}
-      ${d('\u2514\u2500\u2500')} Notification Center ${d('(2 takes)')}
+      ${d('\u2514\u2500\u2500')} ${w('2.1')} Notification Center ${d('(2 takes)')}
 
   ${w('A round')} is a screen or component you're designing.
   ${w('A take')} is a slight variation of the same design.
   Snap the same name again to add another take.
+
+  Use the numbers to reference rounds: "restore 1.1", "compare 1.1 and 2.1"
+  Run ${c('snap action')} to see this overview when working with AI.
 `);
-}
-
-interface ScenarioInfo {
-  name: string;
-  count: number;
-  latestId: string;
-  starred: boolean;
-  tags: string[];
-}
-
-function buildScenarios(versions: PrototypeVersion[]): ScenarioInfo[] {
-  const map = new Map<string, PrototypeVersion[]>();
-
-  for (const v of versions) {
-    const key = `${v.category}::${v.name}`;
-    if (!map.has(key)) map.set(key, []);
-    map.get(key)!.push(v);
-  }
-
-  const scenarios: ScenarioInfo[] = [];
-  for (const [, versionList] of map) {
-    const sorted = versionList.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
-    const latest = sorted[0];
-    scenarios.push({
-      name: latest.name,
-      count: versionList.length,
-      latestId: latest.id,
-      starred: latest.starred,
-      tags: latest.tags,
-    });
-  }
-
-  return scenarios;
 }

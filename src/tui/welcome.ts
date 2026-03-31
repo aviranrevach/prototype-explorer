@@ -3,6 +3,7 @@ import * as p from '@clack/prompts';
 import chalk from 'chalk';
 import { storage } from '../core/storage.js';
 import { createSnapshot } from '../core/snapshot.js';
+import { buildProjectTree, printProjectTree } from '../core/project-tree.js';
 
 export async function runWelcome(): Promise<{ prototypeId: string; groupId: string }> {
   p.intro(chalk.bgHex('#6d5cff').white(' snap '));
@@ -84,25 +85,11 @@ export async function runWelcome(): Promise<{ prototypeId: string; groupId: stri
     s2.stop(`Snapshot "${snapName}" saved (${version.fileCount} files)`);
   }
 
-  // Show what was created
-  const d = chalk.dim;
-  const c = chalk.cyan;
-  if (snapName) {
-    p.log.message(`
-${chalk.white('Your project:')}
-
-  ${c('\u{1F4E6}')} ${projectName}
-  ${d('\u2514\u2500\u2500')} ${c('\u{1F4D6}')} ${groupName}
-      ${d('\u2514\u2500\u2500')} ${snapName} ${d('(1 take)')}
-`);
-  } else {
-    p.log.message(`
-${chalk.white('Your project:')}
-
-  ${c('\u{1F4E6}')} ${projectName}
-  ${d('\u2514\u2500\u2500')} ${c('\u{1F4D6}')} ${groupName} ${d('(empty)')}
-`);
-  }
+  // Show what was created using the same tree format as snap action
+  console.log('');
+  const tree = await buildProjectTree(proto.id);
+  printProjectTree(tree);
+  console.log('');
 
   p.outro('You\'re all set!');
 
