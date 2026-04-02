@@ -1,17 +1,29 @@
-# Snap
+# Snapp
 
-**Version control for design exploration - built for product designers who code.**
+**Version control for HTML prototypes, built for product designers who code.**
 
-You're building prototypes to explore product directions. Maybe it's an onboarding flow, a dashboard redesign, a new navigation concept. You try things, iterate, go in different directions- and before you know it, your coded prototypes are a hot, unorganized, inaccessible mess. Unlike your Figma files where everything is collaborative and browsable, your code prototypes just pile up in folders with no structure, no history, and no way to flip between the cool concepts you created.
+Snapp is for standalone HTML/CSS/JS prototypes, not React, Vue, or framework projects. You edit a single `index.html` file, save snapshots of it, and browse your saved versions in a visual explorer. That's it.
 
-No more. Snap saves snapshots of your prototypes, organizes them into groups you define, and gives you a minimal floating UI to flip between everything - right inside the browser, right inside your project.
+You're building prototypes to explore product directions. Maybe it's an onboarding flow, a dashboard redesign, a new navigation concept. You try things, iterate, go in different directions - and before you know it, your coded prototypes are a hot, unorganized, inaccessible mess. Unlike your Figma files where everything is collaborative and browsable, your code prototypes just pile up in folders with no structure, no history, and no way to flip between the cool concepts you created.
+
+No more. Snapp saves snapshots of your `index.html`, organizes them into groups you define, and gives you a minimal floating UI to flip between everything - right inside the browser.
 Install it for yourself, and your teammates. Your product team needs this.
 
 No cloud. No accounts. Just `npm install` and go.
 
 ---
 
-## Vibe prototyping process:
+## How it works
+
+1. You edit one file: `index.html`
+2. Each time you run `snapp`, it saves a copy of that file as a snapshot
+3. The explorer shows your saved versions in an iframe so you can flip between them
+
+That's the whole model. One file in, snapshots out, visual browsing.
+
+---
+
+## Vibe prototyping process
 
 These are the building blocks. If you've never used version control before, this is your intro, and once you get it, you'll wonder how you worked without it.
 
@@ -23,9 +35,9 @@ Examples: "Onboarding Flow", "Dashboard Redesign", "Ticket Management", "Setting
 
 ### Snap
 
-A snapshot of your code at this exact moment. Like pressing "save" in a way you can always come back to (like in Figma's document history).
+A saved copy of your `index.html` at this exact moment. Like pressing "save" in a way you can always come back to (like in Figma's document history).
 
-Developers call this a **"commit"**- `snap` is your version of that. Every time you snap, your files are copied and stored safely as a new version. You can keep building without worrying about losing what you had before.
+Developers call this a **"commit"** - `snapp` is your version of that. Every time you snapp, your `index.html` is copied and stored safely as a new version. You can keep building without worrying about losing what you had before.
 
 ### Chapter
 
@@ -41,11 +53,11 @@ A named entry within a chapter. "Homepage", "Login Page", "Settings" - each is a
 
 ### Take
 
-When you snap the same name twice, the snaps stack up as takes. You flip between them with arrow keys or numbered buttons, both in the drawer and on the floating pill. This is like having an undo history for one specific design. You can always go back to see how it looked three iterations ago.
+When you snapp the same name twice, the snaps stack up as takes. You flip between them with arrow keys or numbered buttons, both in the drawer and on the floating pill. This is like having an undo history for one specific design. You can always go back to see how it looked three iterations ago.
 
 ### Restore
 
-Your working files are always whatever you last edited - there's only one "current" version of your code at any time. When you snap, you save a copy, but you keep working on the same files. If you break something, go too far in a direction, or just want to pick up from where an older snap left off, `restore` replaces your current files with that snap's saved copy. It's your undo button across time.
+Your working file is always whatever you last edited - there's only one `index.html` at any time. When you snapp, you save a copy, but you keep working on the same file. If you break something, go too far in a direction, or just want to pick up from where an older snap left off, `restore` replaces your current `index.html` with that snap's saved copy. It's your undo button across time.
 
 ### Tags
 
@@ -56,20 +68,22 @@ Labels you attach to any snap. Use them for status ("exploration", "final", "rej
 ## Quick start
 
 ```bash
-npm install snap-proto
+npm install -g snap-proto
 ```
 
 | Step | Command | What it does |
 | --- | --- | --- |
-| **1. Snap** | `snap "Homepage"` | Saves a snapshot of your current files. Auto-initializes on first run. |
-| **2. Explore** | `snap serve` | Opens the explorer at `http://localhost:4200` with a floating pill to browse versions. |
-| **3. Action** | `snap action` | Shows your full project tree and what you can do next. Great for working with AI. |
+| **1. Init** | `snapp init` | Creates a project and a starter `index.html` |
+| **2. Edit** | Edit `index.html` | Your prototype lives here, all HTML/CSS/JS in one file |
+| **3. Snap** | `snapp "My Design"` | Saves a copy of your `index.html` as a snapshot |
+| **4. Explore** | `snapp serve` | Opens the explorer at `http://localhost:4200` to browse all snapshots |
+| **5. Action** | `snapp action` | Shows your full project tree and what you can do next |
 
-That's it. Three commands to get started.
+That's it. Edit, snap, browse.
 
 ### Project overview
 
-Run `snap action` to see your full project at a glance:
+Run `snapp action` to see your full project at a glance:
 
 ```
 📦 Task Management App
@@ -82,7 +96,7 @@ Run `snap action` to see your full project at a glance:
  └─ 2.2 Activity Feed (1 take)
 
 What would you like to do next?
- 1. SNAP current files (new round or take)
+ 1. SNAP current index.html (new round or take)
  2. START a new chapter
  3. SWITCH to a different snap to build from
  4. OPEN visual explorer
@@ -93,10 +107,10 @@ Every round is numbered so you can reference them easily: "add a take to 1.1", "
 
 ### Interactive mode
 
-Run `snap` with no arguments to open the interactive terminal UI:
+Run `snapp` with no arguments to open the interactive terminal UI:
 
 ```bash
-snap
+snapp
 ```
 
 Browse rounds, create snaps, switch chapters, and restore - all from an interactive menu. On first run, it walks you through setup.
@@ -106,8 +120,8 @@ Browse rounds, create snaps, switch chapters, and restore - all from an interact
 These commands are optional - use them when you want more structure:
 
 ```bash
-snap chapter "Dashboard v2"  # start a new chapter of exploration
-snap new "Settings Page"     # create a separate prototype
+snapp chapter "Dashboard v2"  # start a new chapter of exploration
+snapp new "Settings Page"     # create a separate prototype
 ```
 
 ---
@@ -138,149 +152,149 @@ Click the pill to open the drawer:
 
 ### Overview
 
-**`snap action`**
+**`snapp action`**
 Shows your full project tree with numbered rounds and chapters, plus a menu of what you can do next. Use this when working with AI - the numbered references make it easy to talk about specific rounds.
 
 ### Snapshots and versions
 
-**`snap <name>`**
-Takes a snapshot of your current files and saves it as a named version.
+**`snapp <name>`**
+Saves a copy of your current `index.html` as a named snapshot.
 *Use every time you reach a point worth saving: before you try something new, after you finish a direction, or when something just feels right.*
 
 ```bash
-snap "Ideal Flow"
+snapp "Ideal Flow"
 ```
 
 Snap the same name again to create another take you can flip between:
 
 ```bash
-snap "Ideal Flow"   # now you have 2 takes
+snapp "Ideal Flow"   # now you have 2 takes
 ```
 
 **Snap options:** you can control where the snap lands and how it's labeled:
 
 ```bash
 # Put it in a specific chapter
-snap "Ideal Flow" --group <chapter-id>
+snapp "Ideal Flow" --group <chapter-id>
 
 # Label it under a custom category (default is "Scenarios")
-snap "Empty State" --category "Edge Cases"
+snapp "Empty State" --category "Edge Cases"
 
 # Add tags for status or intent
-snap "Bulk Selection" --tag exploration needs-review
+snapp "Bulk Selection" --tag exploration needs-review
 
 # Add a short description
-snap "Error State" --desc "What happens when the API call fails"
+snapp "Error State" --desc "What happens when the API call fails"
 ```
 
-**`snap restore <id>`**
-Pulls a previous snap back into your working files.
+**`snapp restore <id>`**
+Replaces your current `index.html` with a previously saved snapshot.
 *Use when you want to go back to an earlier version, maybe to build on it or compare it side by side with what you have now.*
 
 ```bash
-snap restore abc123
+snapp restore abc123
 ```
 
-**`snap list`**
+**`snapp list`**
 Shows all your prototypes, groups, and versions in the terminal.
 *Use when you want a quick overview without opening the explorer. Add `-v` to see every individual version.*
 
 ```bash
-snap list -v
+snapp list -v
 ```
 
-**`snap rm <id>`**
+**`snapp rm <id>`**
 Deletes a version permanently.
 *Use when a snap is just noise and you want to clean up.*
 
 ### Organizing
 
-**`snap chapter <name>`**
+**`snapp chapter <name>`**
 Creates a new chapter inside your prototype - a new round of exploration.
 
 ```bash
-snap chapter "Checkout v2"
+snapp chapter "Checkout v2"
 ```
 
-**`snap new <name>`**
+**`snapp new <name>`**
 Creates a new prototype - the thing you're building.
 
 ```bash
-snap new "Checkout Experience"
+snapp new "Checkout Experience"
 ```
 
-**`snap tag <id> <tags...>`**
+**`snapp tag <id> <tags...>`**
 Adds or removes tags on a version.
 *Use to mark a version's status or intent: "final", "rejected", "show-to-PM", "needs-work".*
 
 ```bash
-snap tag abc123 final stakeholder-approved
+snapp tag abc123 final stakeholder-approved
 ```
 
-**`snap star <id>`**
+**`snapp star <id>`**
 Toggles a star on a version.
 *Use to mark your favorites - the ones worth showing or coming back to.*
 
-**`snap note <id> <text>`**
+**`snapp note <id> <text>`**
 Attaches a note to a version.
 *Use to capture decisions, feedback, or context while it's still fresh. "PM liked this direction but wants more contrast."*
 
 ```bash
-snap note abc123 "Stakeholder approved - ship this direction"
+snapp note abc123 "Stakeholder approved - ship this direction"
 ```
 
 ### Collaboration and AI
 
-**`snap context`**
+**`snapp context`**
 View, edit, or auto-generate your project context file.
 *Context is your project's memory: goals, audience, design decisions, constraints. Write it for your teammates and your future self.*
 
 ```bash
-snap context generate   # auto-generate from your project structure
-snap context edit       # open in your editor
-snap context            # view in terminal
+snapp context generate   # auto-generate from your project structure
+snapp context edit       # open in your editor
+snapp context            # view in terminal
 ```
 
-**`snap brief <chapter-id> <text>`**
+**`snapp brief <chapter-id> <text>`**
 Sets a short brief on a chapter - what this round of exploration is about.
 *Use before asking AI to compare chapters, or when handing off to a teammate.*
 
 ```bash
-snap brief abc123 "Exploring bold typography and dark color palettes"
+snapp brief abc123 "Exploring bold typography and dark color palettes"
 ```
 
-**`snap export`**
+**`snapp export`**
 Generates a complete summary of your project: context, hierarchy, notes, file listings. In a format AI tools and teammates can read.
 *Use whenever you want to hand off your work, get AI feedback, or just see everything in one place.*
 
 ```bash
-snap export              # print to terminal
-snap export --clipboard  # copy to clipboard (paste into AI)
-snap export --json       # structured JSON instead of markdown
-snap export --group <id> # just one group
+snapp export              # print to terminal
+snapp export --clipboard  # copy to clipboard (paste into AI)
+snapp export --json       # structured JSON instead of markdown
+snapp export --group <id> # just one group
 ```
 
 ---
 
 ## Using with AI
 
-You don't need to memorize commands. Most of the time, you just talk to AI and it works.
+You don't need to memorize commands. Most of the time, you just talk to AI and it edits your `index.html` directly.
 
-### Start with `snap action`
+### Start with `snapp action`
 
-Run `snap action` to show your project tree. AI sees the numbered rounds and can reference them directly. Then just tell it what you want: "add a take to 1.1", "compare 1.1 and 2.1", "start a new chapter called Dark Theme".
+Run `snapp action` to show your project tree. AI sees the numbered rounds and can reference them directly. Then just tell it what you want: "add a take to 1.1", "compare 1.1 and 2.1", "start a new chapter called Dark Theme".
 
-### Just talk - no commands needed
+### Just talk - AI edits your index.html
 
-These prompts work as-is. AI reads your current files and does the work.
+These prompts work as-is. AI reads your `index.html`, makes changes, and you snap the result.
 
 | What you want | Say this to AI | Then save the result |
 | --- | --- | --- |
-| **Simplify a busy layout** | *"This dashboard has too much going on. Keep the **data table** and **filters**, remove the secondary charts, tighten the spacing."* | `snap "Dashboard Overview"` - snapping the same name stacks takes you can flip between |
-| **Generate multiple options** | *"Give me three variations of this **settings page**: one **minimal**, one with a **bold sidebar**, one with **grouped cards**."* | Snap each one: `snap "Option A - Minimal"`, `snap "Option B - Bold Sidebar"`, etc. |
-| **Iterate on a direction** | *"Make the **hero section** bolder: bigger type, more contrast, and swap the illustration for a **full-bleed photo**."* | `snap "Hero - Bold"` |
-| **Explore concepts** | *"Explore 5 different directions for this **settings page**. Try different layouts, visual hierarchies, and grouping styles. After each one, run `snap "Settings Concepts"` so I can flip through them."* | AI generates each direction one at a time. Snapping the same name after each one creates takes: Settings Concepts `< 1/5 >` you flip through with arrow keys |
-| **Fix or polish** | *"The spacing feels off on **mobile**. Tighten the **card grid** and make the **nav** collapse into a hamburger."* | `snap "Mobile Polish"` |
+| **Simplify a busy layout** | *"This dashboard has too much going on. Keep the **data table** and **filters**, remove the secondary charts, tighten the spacing."* | `snapp "Dashboard Overview"` - snapping the same name stacks takes you can flip between |
+| **Generate multiple options** | *"Give me three variations of this **settings page**: one **minimal**, one with a **bold sidebar**, one with **grouped cards**."* | Snap each one: `snapp "Option A - Minimal"`, `snapp "Option B - Bold Sidebar"`, etc. |
+| **Iterate on a direction** | *"Make the **hero section** bolder: bigger type, more contrast, and swap the illustration for a **full-bleed photo**."* | `snapp "Hero - Bold"` |
+| **Explore concepts** | *"Explore 5 different directions for this **settings page**. Try different layouts, visual hierarchies, and grouping styles. After each one, run `snapp "Settings Concepts"` so I can flip through them."* | AI generates each direction one at a time. Snapping the same name after each one creates takes: Settings Concepts `< 1/5 >` you flip through with arrow keys |
+| **Fix or polish** | *"The spacing feels off on **mobile**. Tighten the **card grid** and make the **nav** collapse into a hamburger."* | `snapp "Mobile Polish"` |
 
 ### One command first, then talk
 
@@ -289,7 +303,7 @@ For anything that involves your *saved snaps* (comparing versions, combining pie
 **To give AI your full project:**
 
 ```bash
-snap export --clipboard
+snapp export --clipboard
 ```
 
 Or press `Cmd + K` in the explorer and choose **"Copy Project for AI"**.
@@ -312,9 +326,9 @@ The more context your project has, the better AI's suggestions get. These build 
 
 | What to do | How |
 | --- | --- |
-| **Auto-generate project context** | `snap context generate` - scans your project and creates a context summary |
-| **Edit it yourself** | `snap context edit` - add goals, audience, constraints, design decisions |
-| **Set a brief on a chapter** | `snap brief <chapter-id> "Exploring bolder typography and dark palettes"` |
+| **Auto-generate project context** | `snapp context generate` - scans your project and creates a context summary |
+| **Edit it yourself** | `snapp context edit` - add goals, audience, constraints, design decisions |
+| **Set a brief on a chapter** | `snapp brief <chapter-id> "Exploring bolder typography and dark palettes"` |
 
 Context and briefs are included automatically whenever you export, so AI always has the full picture.
 
@@ -353,14 +367,14 @@ pnpm dev:explorer    # starts Vite dev server
 
 # Seed demo data for testing
 node scripts/seed-demo.mjs
-snap serve
+snapp serve
 ```
 
 ### Project structure
 
 ```
 src/
-├── commands/       <- CLI commands (snap, serve, group, etc.)
+├── commands/       <- CLI commands (snapp, serve, group, etc.)
 ├── core/           <- Storage, snapshots, types, ensure-init
 ├── tui/            <- Interactive terminal UI (welcome, main)
 └── server/         <- Express API + static explorer serving
@@ -378,8 +392,8 @@ explorer/
 
 ```
 .proto-explorer/
-├── config.json
-├── context.md             <- project context for collaboration & AI
+├── config.json          <- contains sourceFile: "index.html"
+├── context.md           <- project context for collaboration & AI
 └── prototypes/
     └── {id}/
         ├── meta.json
@@ -390,7 +404,7 @@ explorer/
         └── versions/
             └── {vid}/
                 ├── meta.json
-                └── files/     <- snapshot of HTML/CSS/JS files
+                └── files/     <- saved copy of index.html
 ```
 
 
