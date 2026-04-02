@@ -6,13 +6,20 @@
   "bin": {
     "snapp": "./dist/index.js"
   },
+  "files": [
+    "dist/",
+    "explorer/dist/",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "dev:cli": "tsup --watch",
     "dev:explorer": "pnpm --filter explorer dev",
     "build:cli": "tsup",
     "build:explorer": "pnpm --filter explorer build",
     "build": "pnpm build:explorer && pnpm build:cli",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm build"
   },
   "dependencies": {
     "@clack/prompts": "^1.1.0",
@@ -32,6 +39,19 @@
     "@types/node": "^22.15.0",
     "tsup": "^8.4.0",
     "typescript": "^5.8.3"
+  },
+  "keywords": [
+    "prototype",
+    "design",
+    "snapshot",
+    "version-control",
+    "html",
+    "css"
+  ],
+  "author": "Aviran Revach",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AviranRevworworach/snap-proto"
   },
   "engines": {
     "node": ">=18"
