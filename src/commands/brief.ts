@@ -74,7 +74,7 @@ export const briefCommand = new Command('brief')
     const brief = await storage.readGroupBrief(protoId, targetGroup.id);
     if (!brief) {
       console.log(chalk.dim(`No brief for "${targetGroup.name}" yet.`));
-      console.log(chalk.dim(`Set one: snap brief ${targetGroup.id} "Your brief text"`));
+      console.log(chalk.dim(`Set one: snapp brief ${targetGroup.id} "Your brief text"`));
       return;
     }
     console.log(chalk.bold(targetGroup.name));

@@ -15,7 +15,7 @@ export const actionCommand = new Command('action')
 
     console.log(`\nAsk me anything about this project.\n`);
     console.log(`What would you like to do next?`);
-    console.log(` 1. ${w('SNAP')} current files (new round or take)`);
+    console.log(` 1. ${w('SNAP')} current index.html (new round or take)`);
     console.log(` 2. ${w('START')} a new chapter`);
     console.log(` 3. ${w('SWITCH')} to a different snap to build from`);
     console.log(` 4. ${w('OPEN')} visual explorer`);

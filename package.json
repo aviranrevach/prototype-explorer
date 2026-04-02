@@ -4,7 +4,7 @@
   "description": "Organize, version, and explore prototypes inside your coding project",
   "type": "module",
   "bin": {
-    "snap": "./dist/index.js"
+    "snapp": "./dist/index.js"
   },
   "scripts": {
     "dev:cli": "tsup --watch",

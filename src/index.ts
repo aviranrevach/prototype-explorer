@@ -18,7 +18,7 @@ import { actionCommand } from './commands/action.js';
 const program = new Command();
 
 program
-  .name('snap')
+  .name('snapp')
   .description('Save, organize, and explore your coded prototypes')
   .version('0.1.0')
   .argument('[name]', 'Snapshot name - creates a snapshot when provided')

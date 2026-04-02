@@ -134,7 +134,7 @@ export const contextCommand = new Command('context')
 
     const text = await storage.readContext();
     if (!text) {
-      console.log(chalk.dim('No context file yet. Run `snap context generate` to create one.'));
+      console.log(chalk.dim('No context file yet. Run `snapp context generate` to create one.'));
       return;
     }
     console.log(text);

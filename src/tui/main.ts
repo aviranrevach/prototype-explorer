@@ -40,7 +40,7 @@ export async function runMainTUI(state: TUIState): Promise<void> {
 
     // Show tip about snap action once
     if (!hasShownTip) {
-      p.log.info(`Tip: run ${chalk.cyan('snap action')} to see this overview when working with AI.`);
+      p.log.info(`Tip: run ${chalk.cyan('snapp action')} to see this overview when working with AI.`);
       hasShownTip = true;
     }
 
@@ -339,7 +339,7 @@ function showHelp() {
   const g = chalk.green;
 
   p.log.message(`
-${w('How designers use Snap:')}
+${w('How designers use Snapp:')}
 
   ${c('\u{1F4E6}')} Task Management App                    ${d('prototype')}
   ${d('\u2502')}
@@ -359,6 +359,6 @@ ${w('How designers use Snap:')}
   Snap the same name again to add another take.
 
   Use the numbers to reference rounds: "restore 1.1", "compare 1.1 and 2.1"
-  Run ${c('snap action')} to see this overview when working with AI.
+  Run ${c('snapp action')} to see this overview when working with AI.
 `);
 }
