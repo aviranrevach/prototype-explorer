@@ -55,7 +55,7 @@ async function init(projectName: string): Promise<ProtoExplorerConfig> {
   const config: ProtoExplorerConfig = {
     version: '0.1.0',
     projectName,
-    trackedPaths: ['.'],
+    sourceFile: 'index.html',
     defaultAuthor: 'Anonymous',
   };
   await fs.ensureDir(root());
@@ -300,6 +300,18 @@ async function listVersionFiles(protoId: string, versionId: string): Promise<str
 // ── Migration: assign existing versions to a default group ──
 
 async function migrateToGroups(): Promise<void> {
+  // Migrate old trackedPaths config to sourceFile
+  try {
+    const rawCfg = await fs.readJson(configPath()) as Record<string, unknown>;
+    if ('trackedPaths' in rawCfg && !('sourceFile' in rawCfg)) {
+      rawCfg['sourceFile'] = 'index.html';
+      delete rawCfg['trackedPaths'];
+      await fs.writeJson(configPath(), rawCfg, { spaces: 2 });
+    }
+  } catch {
+    // no config file yet, nothing to migrate
+  }
+
   const protos = await listPrototypes();
   for (const proto of protos) {
     const versions = await listVersions(proto.id);
@@ -320,6 +332,37 @@ async function migrateToGroups(): Promise<void> {
       await fs.writeJson(metaPath, updated, { spaces: 2 });
     }
   }
+}
+
+// ── Focus Config ──
+
+interface FocusConfig {
+  selector: string;
+  fallbackRect: { top: number; left: number; width: number; height: number };
+}
+
+function focusDir(protoId: string, gId: string) {
+  return path.join(groupDir(protoId, gId), 'focus');
+}
+
+async function readFocusConfig(protoId: string, gId: string, scenarioName: string): Promise<FocusConfig | null> {
+  const filePath = path.join(focusDir(protoId, gId), `${encodeURIComponent(scenarioName)}.json`);
+  try {
+    return await fs.readJson(filePath);
+  } catch {
+    return null;
+  }
+}
+
+async function writeFocusConfig(protoId: string, gId: string, scenarioName: string, config: FocusConfig): Promise<void> {
+  const dir = focusDir(protoId, gId);
+  await fs.ensureDir(dir);
+  await fs.writeJson(path.join(dir, `${encodeURIComponent(scenarioName)}.json`), config, { spaces: 2 });
+}
+
+async function deleteFocusConfig(protoId: string, gId: string, scenarioName: string): Promise<void> {
+  const filePath = path.join(focusDir(protoId, gId), `${encodeURIComponent(scenarioName)}.json`);
+  await fs.remove(filePath);
 }
 
 export const storage = {
@@ -351,4 +394,7 @@ export const storage = {
   groupsDir,
   versionsDir,
   versionDir,
+  readFocusConfig,
+  writeFocusConfig,
+  deleteFocusConfig,
 };

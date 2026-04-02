@@ -1,7 +1,7 @@
 export interface ProtoExplorerConfig {
   version: string;
   projectName: string;
-  trackedPaths: string[];
+  sourceFile: string;
   defaultAuthor: string;
 }
 

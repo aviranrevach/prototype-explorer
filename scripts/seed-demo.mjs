@@ -44,7 +44,7 @@ async function main() {
   await fs.writeJson(path.join(ROOT, 'config.json'), {
     version: '0.1.0',
     projectName: 'Demo Project',
-    trackedPaths: ['.'],
+    sourceFile: 'index.html',
     defaultAuthor: 'Designer',
   }, { spaces: 2 });
 
