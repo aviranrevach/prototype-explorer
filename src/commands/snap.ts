@@ -1,5 +1,7 @@
+import path from 'node:path';
 import { Command } from 'commander';
 import chalk from 'chalk';
+import fs from 'fs-extra';
 import { storage } from '../core/storage.js';
 import { createSnapshot } from '../core/snapshot.js';
 import { ensureInit } from '../core/ensure-init.js';
@@ -13,6 +15,17 @@ export async function runSnap(name: string, opts: {
 }) {
   const { prototypeId: defaultProtoId, groupId: defaultGroupId } = await ensureInit();
 
+  // Validate source file exists
+  const config = await storage.getConfig();
+  const sourceFile = config?.sourceFile || 'index.html';
+  const sourcePath = path.resolve(process.cwd(), sourceFile);
+
+  if (!(await fs.pathExists(sourcePath))) {
+    console.log(chalk.red(`No ${sourceFile} found in project root.`));
+    console.log(chalk.dim(`Create one first, or run ${chalk.cyan('snapp init')} to generate a starter template.`));
+    process.exit(1);
+  }
+
   const prototypeId = opts.prototype || defaultProtoId;
 
   let groupId = opts.group;
@@ -21,17 +34,16 @@ export async function runSnap(name: string, opts: {
     groupId = groups.length > 0 ? groups[0].id : defaultGroupId;
   }
 
-  const config = (await storage.getConfig())!;
   const version = await createSnapshot(prototypeId, {
     name,
     groupId,
     category: opts.category || 'Scenarios',
     description: opts.desc,
     tags: opts.tag || [],
-    author: config.defaultAuthor,
+    author: config?.defaultAuthor,
   });
 
-  console.log(chalk.green('\u2713') + ` Snapshot "${name}" created (${version.fileCount} files)`);
+  console.log(chalk.green('\u2713') + ` Snapshot "${name}" saved`);
   if (opts.category) {
     console.log(chalk.dim(`  Category: ${opts.category}`));
   }
