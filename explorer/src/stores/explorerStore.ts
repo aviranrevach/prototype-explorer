@@ -66,6 +66,11 @@ interface ExplorerStore {
   closeOnLeave: boolean;
   pendingGroupId: string | null;
 
+  focusMode: boolean;
+  pickingElement: boolean;
+  focusSelector: string | null;
+  focusFallbackRect: { top: number; left: number; width: number; height: number } | null;
+
   fetchPrototypes: () => Promise<void>;
   loadPrototype: (id: string) => Promise<void>;
   createPrototype: (name: string, description?: string) => Promise<Prototype>;
@@ -84,6 +89,13 @@ interface ExplorerStore {
   openDrawer: () => void;
   closeDrawer: () => void;
   toggleDrawer: () => void;
+
+  startPicking: () => void;
+  cancelPicking: () => void;
+  setFocusTarget: (selector: string, rect: { top: number; left: number; width: number; height: number }) => void;
+  exitFocusMode: () => void;
+  clearFocusTarget: () => void;
+  clearFocusForRound: () => void;
 
   currentVersion: () => PrototypeVersion | null;
   groupVersions: () => PrototypeVersion[];
@@ -114,6 +126,11 @@ export const useExplorerStore = create<ExplorerStore>((set, get) => ({
   closeOnLeave: false,
   pendingGroupId: null,
 
+  focusMode: false,
+  pickingElement: false,
+  focusSelector: null,
+  focusFallbackRect: null,
+
   fetchPrototypes: async () => {
     const protos = await api.prototypes.list();
     const allItems: GroupListItem[] = [];
@@ -128,7 +145,7 @@ export const useExplorerStore = create<ExplorerStore>((set, get) => ({
           allItems.push({
             group: g,
             prototypeId: p.id,
-            versionCount: versions.filter((v: any) => v.groupId === g.id).length,
+            versionCount: new Set(versions.filter((v: any) => v.groupId === g.id).map((v: any) => v.name)).size,
           });
         }
       }),
@@ -271,6 +288,30 @@ export const useExplorerStore = create<ExplorerStore>((set, get) => ({
   openDrawer: () => set({ drawerOpen: true, drawerView: 'scenarios', closeOnLeave: false }),
   closeDrawer: () => set({ drawerOpen: false, closeOnLeave: false }),
   toggleDrawer: () => set((s) => s.drawerOpen ? { drawerOpen: false, closeOnLeave: false } : { drawerOpen: true, drawerView: 'scenarios', closeOnLeave: false }),
+
+  startPicking: () => set({ pickingElement: true, focusMode: false }),
+  cancelPicking: () => set({ pickingElement: false }),
+  setFocusTarget: (selector, rect) => {
+    set({ focusSelector: selector, focusFallbackRect: rect, focusMode: true, pickingElement: false });
+    // Persist to API
+    const version = get().currentVersion();
+    const proto = get().currentPrototype;
+    const group = get().currentGroup;
+    if (version && proto && group) {
+      api.focus.set(proto.id, group.id, version.name, { selector, fallbackRect: rect }).catch(() => {});
+    }
+  },
+  exitFocusMode: () => set({ focusMode: false }),
+  clearFocusTarget: () => set({ focusMode: false, focusSelector: null, focusFallbackRect: null }),
+  clearFocusForRound: () => {
+    const version = get().currentVersion();
+    const proto = get().currentPrototype;
+    const group = get().currentGroup;
+    if (version && proto && group) {
+      api.focus.delete(proto.id, group.id, version.name).catch(() => {});
+    }
+    set({ focusMode: false, focusSelector: null, focusFallbackRect: null });
+  },
 
   currentVersion: () => {
     const { allVersions, activeVersionId, currentGroup } = get();

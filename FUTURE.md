@@ -4,7 +4,13 @@ Ideas and improvements to consider. Not prioritized, not committed - just captur
 
 ---
 
+## Snapshots
+
+- **Multi-file snapshots** - support snapping a folder with `index.html` + separate CSS, JS, and image files instead of only single-file HTML. Serve the folder as static files in the preview iframe. Useful for more complex prototypes that need external assets.
+
 ## Storage
+
+- **Explicit chapter ordering** - chapters are currently sorted by `updatedAt` descending, making manual reordering impossible without editing meta.json timestamps. Add an `order` field to `VersionGroup` so users can reorder chapters without hacks.
 
 - **Dedup snaps** - hash each file, only store unique content. If 45/50 files are identical between snaps, store them once. Could reduce storage 80-90% for projects with many snaps.
 - **Diff-based storage** - only store changed files since last snap. Smaller but slower restores.
